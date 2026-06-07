@@ -13,7 +13,7 @@ class Command(BaseCommand):
                 username='admin',
                 password=make_password('admin123'),
                 role=User.ROLE_ADMIN,
-                first_name='مدير',
+                first_name='',
                 is_staff=True,
                 is_superuser=True,
             )
@@ -25,7 +25,7 @@ class Command(BaseCommand):
                 username='cashier',
                 password=make_password('cashier123'),
                 role=User.ROLE_CASHIER,
-                first_name='كاشير',
+                first_name='',
             )
             self.stdout.write(self.style.SUCCESS('OK Cashier user created: cashier / cashier123'))
 
