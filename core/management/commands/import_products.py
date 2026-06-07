@@ -75,7 +75,7 @@ class Command(BaseCommand):
                     skipped += 1
                     continue
 
-                display_name = name_ar if name_ar else name_en
+                display_name = name_en  # always use English name
                 description = row.get('description', '').strip()
 
                 calories = None
