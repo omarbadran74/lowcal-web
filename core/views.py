@@ -239,6 +239,16 @@ def admin_subscribers(request):
 
 @admin_required
 @require_POST
+def reset_day(request, pk, day_number):
+    subscriber = get_object_or_404(Subscriber, pk=pk)
+    DailySubmission.objects.filter(subscriber=subscriber, day_number=day_number).delete()
+    DailyDelivery.objects.filter(subscriber=subscriber, day_number=day_number).delete()
+    messages.success(request, f'Day {day_number} reset — subscriber can now reselect and resubmit')
+    return redirect('cashier:subscriber_detail', pk=pk)
+
+
+@admin_required
+@require_POST
 def subscriber_delete(request, pk):
     subscriber = get_object_or_404(Subscriber, pk=pk)
     name = subscriber.name

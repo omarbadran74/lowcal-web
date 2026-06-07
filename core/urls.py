@@ -18,6 +18,7 @@ admin_panel_patterns = ([
     path('plans/<int:pk>/delete/', views.plan_delete, name='plan_delete'),
     path('subscribers/', views.admin_subscribers, name='subscribers'),
     path('subscribers/<int:pk>/delete/', views.subscriber_delete, name='subscriber_delete'),
+    path('subscribers/<int:pk>/reset/<int:day_number>/', views.reset_day, name='reset_day'),
 ], 'admin_panel')
 
 # Cashier URLs
