@@ -11,7 +11,7 @@ from openpyxl.styles import Font, PatternFill, Alignment
 
 from .models import (
     User, FoodCategory, FoodItem, SubscriptionPlan,
-    Subscriber, DailyMealSelection, DailySubmission, MEAL_TYPES
+    Subscriber, DailyMealSelection, DailySubmission, DailyDelivery, MEAL_TYPES
 )
 
 
@@ -318,10 +318,17 @@ def subscriber_detail(request, pk):
     })
 
 
-def _build_orders(day_filter=None):
-    subscribers = Subscriber.objects.select_related('plan').prefetch_related('selections__food_item', 'submissions')
+def _build_orders(day_filter=None, name_filter='', plan_filter=''):
+    subs = Subscriber.objects.select_related('plan').prefetch_related('selections__food_item', 'submissions')
+    if name_filter:
+        subs = subs.filter(name__icontains=name_filter)
+    if plan_filter:
+        subs = subs.filter(plan__goal=plan_filter)
+
+    delivered_set = set(DailyDelivery.objects.values_list('subscriber_id', 'day_number'))
+
     orders = []
-    for sub in subscribers:
+    for sub in subs:
         submitted_days = set(sub.submissions.values_list('day_number', flat=True))
         for d in range(1, sub.total_days() + 1):
             if day_filter and str(d) != str(day_filter):
@@ -334,19 +341,42 @@ def _build_orders(day_filter=None):
                 'day': d,
                 'selections': sels,
                 'meal_types': sub.get_meal_types_list(),
+                'delivered': (sub.pk, d) in delivered_set,
             })
     return orders
 
 
 @cashier_required
 def orders_view(request):
-    day_filter = request.GET.get('day')
-    orders = _build_orders(day_filter)
+    day_filter = request.GET.get('day', '')
+    name_filter = request.GET.get('name', '').strip()
+    plan_filter = request.GET.get('plan', '')
+
+    orders = _build_orders(day_filter or None, name_filter, plan_filter)
+
     return render(request, 'cashier/orders.html', {
         'orders': orders,
         'meal_types_display': dict(MEAL_TYPES),
         'selected_day': day_filter,
+        'name_filter': name_filter,
+        'plan_filter': plan_filter,
+        'goal_choices': SubscriptionPlan.GOAL_CHOICES,
     })
+
+
+@cashier_required
+@require_POST
+def toggle_delivery(request, subscriber_id, day_number):
+    subscriber = get_object_or_404(Subscriber, pk=subscriber_id)
+    delivery, created = DailyDelivery.objects.get_or_create(
+        subscriber=subscriber,
+        day_number=day_number,
+        defaults={'delivered_by': request.user}
+    )
+    if not created:
+        delivery.delete()
+        return JsonResponse({'delivered': False})
+    return JsonResponse({'delivered': True})
 
 
 @cashier_required

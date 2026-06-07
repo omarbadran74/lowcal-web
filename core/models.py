@@ -149,4 +149,17 @@ class DailySubmission(models.Model):
         unique_together = ['subscriber', 'day_number']
 
     def __str__(self):
-        return f"{self.subscriber.name} - اليوم {self.day_number}"
+        return f"{self.subscriber.name} - day {self.day_number}"
+
+
+class DailyDelivery(models.Model):
+    subscriber = models.ForeignKey(Subscriber, on_delete=models.CASCADE, related_name='deliveries')
+    day_number = models.PositiveIntegerField()
+    delivered_at = models.DateTimeField(auto_now_add=True)
+    delivered_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True)
+
+    class Meta:
+        unique_together = ['subscriber', 'day_number']
+
+    def __str__(self):
+        return f"{self.subscriber.name} - day {self.day_number} delivered"

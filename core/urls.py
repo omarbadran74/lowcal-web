@@ -27,4 +27,5 @@ cashier_patterns = ([
     path('subscribers/<int:pk>/', views.subscriber_detail, name='subscriber_detail'),
     path('orders/', views.orders_view, name='orders'),
     path('orders/export/', views.orders_export_excel, name='orders_export'),
+    path('orders/<int:subscriber_id>/<int:day_number>/deliver/', views.toggle_delivery, name='toggle_delivery'),
 ], 'cashier')
