@@ -5,14 +5,23 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LowCal - تسجيل الدخول</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Cairo', sans-serif; }</style>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <style>body { font-family: 'Cairo', sans-serif; } .lowcal-logo { font-family: 'Playfair Display', Georgia, serif; }</style>
 </head>
 <body class="bg-gradient-to-br from-orange-50 to-amber-100 min-h-screen flex items-center justify-center">
 <div class="w-full max-w-sm">
     <div class="bg-white rounded-2xl shadow-xl p-8">
         <div class="text-center mb-8">
-            <img src="/static/logo.jpeg" alt="LowCal" class="h-24 w-auto object-contain mx-auto mb-2">
+            <div class="flex flex-col items-center mb-2">
+                <div class="lowcal-logo" style="font-size:52px;color:#2B3920;letter-spacing:4px;line-height:1.1;">
+                    Lo<span style="font-size:22px;vertical-align:middle;margin:0 2px;">&#10022;</span>wcal
+                </div>
+                <div style="display:flex;align-items:center;gap:10px;margin-top:4px;">
+                    <div style="width:55px;height:1px;background:#8B4030;"></div>
+                    <span class="lowcal-logo" style="font-size:11px;color:#8B4030;letter-spacing:3px;">Healthy Meals</span>
+                    <div style="width:55px;height:1px;background:#8B4030;"></div>
+                </div>
+            </div>
             <p class="text-gray-400 text-sm">نظام إدارة الاشتراكات</p>
         </div>
 
