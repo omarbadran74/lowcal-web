@@ -15,7 +15,7 @@ from .models import (
 )
 
 
-# ── Auth ──────────────────────────────────────────────────────────────────────
+# -- Auth --
 
 def login_view(request):
     if request.user.is_authenticated:
@@ -27,7 +27,7 @@ def login_view(request):
         if user:
             login(request, user)
             return _redirect_by_role(user)
-        messages.error(request, 'اسم المستخدم أو كلمة المرور غير صحيحة')
+        messages.error(request, 'Invalid username or password')
     return render(request, 'login.html')
 
 
@@ -42,13 +42,13 @@ def _redirect_by_role(user):
     return redirect('cashier:dashboard')
 
 
-# ── Admin Panel ───────────────────────────────────────────────────────────────
+# -- Admin Panel --
 
 def admin_required(view_func):
     @login_required
     def wrapper(request, *args, **kwargs):
         if not request.user.is_admin_role():
-            return HttpResponseForbidden('غير مصرح لك بالوصول')
+            return HttpResponseForbidden('Access denied')
         return view_func(request, *args, **kwargs)
     wrapper.__name__ = view_func.__name__
     return wrapper
@@ -78,12 +78,12 @@ def category_create(request):
         meal_type = request.POST.get('meal_type')
         if name and meal_type:
             FoodCategory.objects.create(name=name, meal_type=meal_type)
-            messages.success(request, 'تم إضافة الفئة بنجاح')
+            messages.success(request, 'Category added successfully')
             return redirect('admin_panel:category_list')
-        messages.error(request, 'يرجى ملء جميع الحقول')
+        messages.error(request, 'Please fill all fields')
     return render(request, 'admin_panel/category_form.html', {
         'meal_types': MEAL_TYPES,
-        'title': 'إضافة فئة جديدة',
+        'title': 'Add Category',
     })
 
 
@@ -95,12 +95,12 @@ def category_edit(request, pk):
         category.meal_type = request.POST.get('meal_type')
         category.is_active = request.POST.get('is_active') == 'on'
         category.save()
-        messages.success(request, 'تم تعديل الفئة بنجاح')
+        messages.success(request, 'Category updated successfully')
         return redirect('admin_panel:category_list')
     return render(request, 'admin_panel/category_form.html', {
         'category': category,
         'meal_types': MEAL_TYPES,
-        'title': 'تعديل الفئة',
+        'title': 'Edit Category',
     })
 
 
@@ -110,7 +110,7 @@ def category_delete(request, pk):
     category = get_object_or_404(FoodCategory, pk=pk)
     category.is_active = False
     category.save()
-    messages.success(request, 'تم حذف الفئة')
+    messages.success(request, 'Category deleted')
     return redirect('admin_panel:category_list')
 
 
@@ -143,13 +143,13 @@ def item_create(request):
                 calories=int(calories) if calories else None,
             )
             item.categories.set(category_ids)
-            messages.success(request, 'تم إضافة الطبق بنجاح')
+            messages.success(request, 'Dish added successfully')
             return redirect('admin_panel:item_list')
-        messages.error(request, 'يرجى ملء جميع الحقول المطلوبة')
+        messages.error(request, 'Please fill all required fields')
     return render(request, 'admin_panel/item_form.html', {
         'categories': categories,
         'selected_categories': [],
-        'title': 'إضافة طبق جديد',
+        'title': 'Add Dish',
     })
 
 
@@ -165,13 +165,13 @@ def item_edit(request, pk):
         item.is_active = request.POST.get('is_active') == 'on'
         item.save()
         item.categories.set(request.POST.getlist('categories'))
-        messages.success(request, 'تم تعديل الطبق بنجاح')
+        messages.success(request, 'Dish updated successfully')
         return redirect('admin_panel:item_list')
     return render(request, 'admin_panel/item_form.html', {
         'item': item,
         'categories': categories,
         'selected_categories': list(item.categories.values_list('id', flat=True)),
-        'title': 'تعديل الطبق',
+        'title': 'Edit Dish',
     })
 
 
@@ -181,7 +181,7 @@ def item_delete(request, pk):
     item = get_object_or_404(FoodItem, pk=pk)
     item.is_active = False
     item.save()
-    messages.success(request, 'تم حذف الطبق')
+    messages.success(request, 'Dish deleted')
     return redirect('admin_panel:item_list')
 
 
@@ -203,9 +203,9 @@ def plan_create(request):
                 goal=goal, meals_per_day=int(meals_per_day), days=int(days),
                 defaults={'price': price}
             )
-            messages.success(request, 'تم إضافة الخطة بنجاح')
+            messages.success(request, 'Plan added successfully')
             return redirect('admin_panel:plan_list')
-    return render(request, 'admin_panel/plan_form.html', {'title': 'إضافة خطة جديدة'})
+    return render(request, 'admin_panel/plan_form.html', {'title': 'Add Plan'})
 
 
 @admin_required
@@ -217,9 +217,9 @@ def plan_edit(request, pk):
         plan.days = int(request.POST.get('days'))
         plan.price = request.POST.get('price')
         plan.save()
-        messages.success(request, 'تم تعديل الخطة بنجاح')
+        messages.success(request, 'Plan updated successfully')
         return redirect('admin_panel:plan_list')
-    return render(request, 'admin_panel/plan_form.html', {'plan': plan, 'title': 'تعديل الخطة'})
+    return render(request, 'admin_panel/plan_form.html', {'plan': plan, 'title': 'Edit Plan'})
 
 
 @admin_required
@@ -227,7 +227,7 @@ def plan_edit(request, pk):
 def plan_delete(request, pk):
     plan = get_object_or_404(SubscriptionPlan, pk=pk)
     plan.delete()
-    messages.success(request, 'تم حذف الخطة')
+    messages.success(request, 'Plan deleted')
     return redirect('admin_panel:plan_list')
 
 
@@ -243,17 +243,17 @@ def subscriber_delete(request, pk):
     subscriber = get_object_or_404(Subscriber, pk=pk)
     name = subscriber.name
     subscriber.delete()
-    messages.success(request, f'تم حذف المشترك {name}')
+    messages.success(request, f'Subscriber {name} deleted')
     return redirect('cashier:dashboard')
 
 
-# ── Cashier Panel ─────────────────────────────────────────────────────────────
+# -- Cashier Panel --
 
 def cashier_required(view_func):
     @login_required
     def wrapper(request, *args, **kwargs):
         if not (request.user.is_cashier_role() or request.user.is_admin_role()):
-            return HttpResponseForbidden('غير مصرح لك بالوصول')
+            return HttpResponseForbidden('Access denied')
         return view_func(request, *args, **kwargs)
     wrapper.__name__ = view_func.__name__
     return wrapper
@@ -277,21 +277,17 @@ def subscriber_create(request):
         notes = request.POST.get('notes', '').strip()
         if name and phone and plan_id and meal_types and start_date:
             subscriber = Subscriber.objects.create(
-                name=name,
-                phone=phone,
-                plan_id=plan_id,
+                name=name, phone=phone, plan_id=plan_id,
                 meal_types=','.join(meal_types),
-                start_date=start_date,
-                notes=notes,
-                created_by=request.user,
+                start_date=start_date, notes=notes, created_by=request.user,
             )
-            messages.success(request, f'تم إنشاء حساب {name} بنجاح!')
+            messages.success(request, f'Subscriber {name} created successfully!')
             return redirect('cashier:subscriber_detail', pk=subscriber.pk)
-        messages.error(request, 'يرجى ملء جميع الحقول المطلوبة')
+        messages.error(request, 'Please fill all required fields')
     return render(request, 'cashier/subscriber_form.html', {
         'plans': plans,
         'meal_types': MEAL_TYPES,
-        'title': 'مشترك جديد',
+        'title': 'New Subscriber',
     })
 
 
@@ -332,7 +328,7 @@ def _build_orders(day_filter=None):
                 continue
             if d not in submitted_days:
                 continue
-            sels = {s.meal_type: s.food_item.name if s.food_item else '—' for s in sub.selections.filter(day_number=d)}
+            sels = {s.meal_type: s.food_item.name if s.food_item else '-' for s in sub.selections.filter(day_number=d)}
             orders.append({
                 'subscriber': sub,
                 'day': d,
@@ -361,13 +357,12 @@ def orders_export_excel(request):
     wb = openpyxl.Workbook()
     ws = wb.active
     ws.title = 'Orders'
-    ws.sheet_view.rightToLeft = True
 
     header_fill = PatternFill(start_color='FF6B00', end_color='FF6B00', fill_type='solid')
     header_font = Font(bold=True, color='FFFFFF', size=12)
     center = Alignment(horizontal='center', vertical='center')
 
-    headers = ['الاسم', 'الهاتف', 'الخطة', 'اليوم', 'إفطار', 'غداء', 'عشاء', 'سناك']
+    headers = ['Name', 'Phone', 'Plan', 'Day', 'Breakfast', 'Lunch', 'Dinner', 'Snack']
     meal_type_cols = {'breakfast': 4, 'lunch': 5, 'dinner': 6, 'snack': 7}
 
     for col, h in enumerate(headers, 1):
@@ -375,7 +370,7 @@ def orders_export_excel(request):
         cell.fill = header_fill
         cell.font = header_font
         cell.alignment = center
-        ws.column_dimensions[cell.column_letter].width = 18
+        ws.column_dimensions[cell.column_letter].width = 20
 
     for row_idx, order in enumerate(orders, 2):
         sub = order['subscriber']
@@ -394,7 +389,7 @@ def orders_export_excel(request):
     return resp
 
 
-# ── Subscriber Public Page ────────────────────────────────────────────────────
+# -- Subscriber Public Page --
 
 @ensure_csrf_cookie
 def subscriber_page(request, token):
@@ -459,10 +454,10 @@ def subscriber_select_meal(request, token):
     food_item_id = data.get('food_item_id')
 
     if DailySubmission.objects.filter(subscriber=subscriber, day_number=day_number).exists():
-        return JsonResponse({'error': 'اليوم تم إرساله مسبقاً'}, status=400)
+        return JsonResponse({'error': 'This day was already submitted'}, status=400)
 
     if meal_type not in subscriber.get_meal_types_list():
-        return JsonResponse({'error': 'نوع وجبة غير صحيح'}, status=400)
+        return JsonResponse({'error': 'Invalid meal type'}, status=400)
 
     food_item = get_object_or_404(FoodItem, pk=food_item_id, is_active=True)
 
@@ -482,7 +477,7 @@ def subscriber_submit_day(request, token):
     day_number = int(data.get('day'))
 
     if DailySubmission.objects.filter(subscriber=subscriber, day_number=day_number).exists():
-        return JsonResponse({'error': 'اليوم تم إرساله مسبقاً'}, status=400)
+        return JsonResponse({'error': 'This day was already submitted'}, status=400)
 
     meal_types_list = subscriber.get_meal_types_list()
     selected_count = DailyMealSelection.objects.filter(
@@ -493,7 +488,7 @@ def subscriber_submit_day(request, token):
     ).count()
 
     if selected_count < len(meal_types_list):
-        return JsonResponse({'error': 'يرجى اختيار جميع الوجبات أولاً'}, status=400)
+        return JsonResponse({'error': 'Please select all meals first'}, status=400)
 
     DailySubmission.objects.create(subscriber=subscriber, day_number=day_number)
     return JsonResponse({'success': True})

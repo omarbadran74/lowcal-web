@@ -3,43 +3,43 @@
 {% block content %}
 <div class="max-w-md">
     <div class="mb-6">
-        <a href="{% url 'admin_panel:plan_list' %}" class="text-sm text-gray-400 hover:text-gray-600">← الخطط</a>
+        <a href="{% url 'admin_panel:plan_list' %}" class="text-sm text-gray-400 hover:text-gray-600">← Plans</a>
         <h1 class="text-2xl font-bold text-gray-800 mt-1">{{ title }}</h1>
     </div>
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <form method="post" class="space-y-4">
             {% csrf_token %}
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">الهدف <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Goal <span class="text-red-500">*</span></label>
                 <select name="goal" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-300">
-                    <option value="">اختر...</option>
-                    <option value="lose" {% if plan.goal == 'lose' %}selected{% endif %}>إنقاص الوزن</option>
-                    <option value="gain" {% if plan.goal == 'gain' %}selected{% endif %}>زيادة الوزن</option>
+                    <option value="">Choose...</option>
+                    <option value="lose" {% if plan.goal == 'lose' %}selected{% endif %}>Lose Weight</option>
+                    <option value="gain" {% if plan.goal == 'gain' %}selected{% endif %}>Gain Weight</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">عدد الوجبات يومياً <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Meals per Day <span class="text-red-500">*</span></label>
                 <input type="number" name="meals_per_day" value="{{ plan.meals_per_day|default:'' }}" min="1" max="6" required
                     class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-300">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">عدد الأيام <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Days <span class="text-red-500">*</span></label>
                 <select name="days" required class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-300">
-                    <option value="">اختر...</option>
-                    <option value="7" {% if plan.days == 7 %}selected{% endif %}>7 أيام</option>
-                    <option value="14" {% if plan.days == 14 %}selected{% endif %}>14 يوم</option>
-                    <option value="21" {% if plan.days == 21 %}selected{% endif %}>21 يوم</option>
-                    <option value="28" {% if plan.days == 28 %}selected{% endif %}>28 يوم</option>
+                    <option value="">Choose...</option>
+                    <option value="7" {% if plan.days == 7 %}selected{% endif %}>7 Days</option>
+                    <option value="14" {% if plan.days == 14 %}selected{% endif %}>14 Days</option>
+                    <option value="21" {% if plan.days == 21 %}selected{% endif %}>21 Days</option>
+                    <option value="28" {% if plan.days == 28 %}selected{% endif %}>28 Days</option>
                 </select>
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">السعر (ريال قطري) <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Price (QAR) <span class="text-red-500">*</span></label>
                 <input type="number" name="price" value="{{ plan.price|default:'' }}" min="0" step="0.01" required
                     class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-300">
             </div>
             <div class="flex gap-3 pt-2">
-                <button type="submit" class="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-orange-600 transition">حفظ</button>
-                <a href="{% url 'admin_panel:plan_list' %}" class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-bold hover:bg-gray-200 transition">إلغاء</a>
+                <button type="submit" class="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-orange-600 transition">Save</button>
+                <a href="{% url 'admin_panel:plan_list' %}" class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-bold hover:bg-gray-200 transition">Cancel</a>
             </div>
         </form>
     </div>

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -7,31 +7,13 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
-            theme: {
-                extend: {
-                    colors: {
-                        primary: '#FF6B00',
-                        secondary: '#4CAF50',
-                    },
-                    fontFamily: {
-                        arabic: ['Cairo', 'sans-serif'],
-                    }
-                }
-            }
+            theme: { extend: { colors: { primary: '#FF6B00' } } }
         }
     </script>
-    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&family=Playfair+Display:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Playfair+Display:wght@400;700&display=swap" rel="stylesheet">
     <style>
+        body { font-family: 'Inter', sans-serif; }
         .lowcal-logo { font-family: 'Playfair Display', Georgia, serif; }
-    </style>
-    <style>
-        body { font-family: 'Cairo', sans-serif; }
-        .btn-primary { @apply bg-primary text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition font-semibold; }
-        .btn-secondary { @apply bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition font-semibold; }
-        .btn-danger { @apply bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition font-semibold; }
-        .card { @apply bg-white rounded-xl shadow-sm border border-gray-100 p-5; }
-        .form-input { @apply w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-gray-800; }
-        .form-label { @apply block text-sm font-semibold text-gray-700 mb-1; }
     </style>
     {% block extra_head %}{% endblock %}
 </head>
@@ -42,24 +24,24 @@
     <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
         <div class="flex items-center gap-6">
             <a href="/" class="flex flex-col items-center leading-none select-none">
-                <div class="lowcal-logo" style="font-size:24px;color:#2B3920;letter-spacing:2px;line-height:1.1;">
-                    Lo<span style="font-size:10px;vertical-align:middle;margin:0 1px;color:#2B3920;">&#10022;</span>wcal
+                <div class="lowcal-logo" style="font-size:22px;color:#2B3920;letter-spacing:2px;line-height:1.1;">
+                    Lo<span style="font-size:9px;vertical-align:middle;margin:0 1px;">&#10022;</span>wcal
                 </div>
-                <div style="display:flex;align-items:center;gap:5px;margin-top:2px;">
-                    <div style="width:18px;height:0.7px;background:#8B4030;"></div>
-                    <span class="lowcal-logo" style="font-size:6.5px;color:#8B4030;letter-spacing:2px;">Healthy Meals</span>
-                    <div style="width:18px;height:0.7px;background:#8B4030;"></div>
+                <div style="display:flex;align-items:center;gap:4px;margin-top:1px;">
+                    <div style="width:16px;height:0.6px;background:#8B4030;"></div>
+                    <span class="lowcal-logo" style="font-size:5.5px;color:#8B4030;letter-spacing:2px;">Healthy Meals</span>
+                    <div style="width:16px;height:0.6px;background:#8B4030;"></div>
                 </div>
             </a>
             <div class="flex gap-1">
                 {% if user.is_admin_role %}
-                <a href="{% url 'admin_panel:dashboard' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">لوحة الإدارة</a>
-                <a href="{% url 'admin_panel:category_list' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">الفئات</a>
-                <a href="{% url 'admin_panel:item_list' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">الأطباق</a>
-                <a href="{% url 'admin_panel:plan_list' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">الخطط</a>
+                <a href="{% url 'admin_panel:dashboard' %}" class="px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-50 text-gray-600 hover:text-primary transition">Admin Panel</a>
+                <a href="{% url 'admin_panel:category_list' %}" class="px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-50 text-gray-600 hover:text-primary transition">Categories</a>
+                <a href="{% url 'admin_panel:item_list' %}" class="px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-50 text-gray-600 hover:text-primary transition">Dishes</a>
+                <a href="{% url 'admin_panel:plan_list' %}" class="px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-50 text-gray-600 hover:text-primary transition">Plans</a>
                 {% endif %}
-                <a href="{% url 'cashier:dashboard' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">المشتركون</a>
-                <a href="{% url 'cashier:orders' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">الطلبات</a>
+                <a href="{% url 'cashier:dashboard' %}" class="px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-50 text-gray-600 hover:text-primary transition">Subscribers</a>
+                <a href="{% url 'cashier:orders' %}" class="px-3 py-1.5 rounded-lg text-sm font-medium hover:bg-orange-50 text-gray-600 hover:text-primary transition">Orders</a>
             </div>
         </div>
         <div class="flex items-center gap-3">
@@ -67,7 +49,7 @@
             <span class="text-xs px-2 py-0.5 rounded-full {% if user.is_admin_role %}bg-orange-100 text-orange-700{% else %}bg-blue-100 text-blue-700{% endif %}">
                 {{ user.get_role_display }}
             </span>
-            <a href="{% url 'logout' %}" class="text-sm text-gray-400 hover:text-red-500 transition">خروج</a>
+            <a href="{% url 'logout' %}" class="text-sm text-gray-400 hover:text-red-500 transition">Logout</a>
         </div>
     </div>
 </nav>

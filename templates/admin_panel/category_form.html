@@ -3,23 +3,22 @@
 {% block content %}
 <div class="max-w-lg">
     <div class="mb-6">
-        <a href="{% url 'admin_panel:category_list' %}" class="text-sm text-gray-400 hover:text-gray-600">← الفئات</a>
+        <a href="{% url 'admin_panel:category_list' %}" class="text-sm text-gray-400 hover:text-gray-600">← Categories</a>
         <h1 class="text-2xl font-bold text-gray-800 mt-1">{{ title }}</h1>
     </div>
-
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
         <form method="post" class="space-y-4">
             {% csrf_token %}
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">اسم الفئة <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Category Name <span class="text-red-500">*</span></label>
                 <input type="text" name="name" value="{{ category.name|default:'' }}" required
                     class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
             </div>
             <div>
-                <label class="block text-sm font-semibold text-gray-700 mb-1">نوع الوجبة <span class="text-red-500">*</span></label>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">Meal Type <span class="text-red-500">*</span></label>
                 <select name="meal_type" required
                     class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
-                    <option value="">اختر...</option>
+                    <option value="">Choose...</option>
                     {% for value, label in meal_types %}
                     <option value="{{ value }}" {% if category.meal_type == value %}selected{% endif %}>{{ label }}</option>
                     {% endfor %}
@@ -27,14 +26,13 @@
             </div>
             {% if category %}
             <div class="flex items-center gap-2">
-                <input type="checkbox" name="is_active" id="is_active" {% if category.is_active %}checked{% endif %}
-                    class="w-4 h-4 accent-orange-500">
-                <label for="is_active" class="text-sm font-semibold text-gray-700">نشطة</label>
+                <input type="checkbox" name="is_active" id="is_active" {% if category.is_active %}checked{% endif %} class="w-4 h-4 accent-orange-500">
+                <label for="is_active" class="text-sm font-semibold text-gray-700">Active</label>
             </div>
             {% endif %}
             <div class="flex gap-3 pt-2">
-                <button type="submit" class="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-orange-600 transition">حفظ</button>
-                <a href="{% url 'admin_panel:category_list' %}" class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-bold hover:bg-gray-200 transition">إلغاء</a>
+                <button type="submit" class="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-orange-600 transition">Save</button>
+                <a href="{% url 'admin_panel:category_list' %}" class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-bold hover:bg-gray-200 transition">Cancel</a>
             </div>
         </form>
     </div>

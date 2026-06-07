@@ -1,0 +1,58 @@
+name: Auto-Renew PythonAnywhere
+
+on:
+  schedule:
+    - cron: '0 8 1 */2 *'  # كل شهرين في أول الشهر
+  workflow_dispatch:  # تشغيل يدوي من GitHub لو احتجت
+
+jobs:
+  renew:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Extend PythonAnywhere Webapp
+        run: |
+          python3 << 'EOF'
+          import requests, re, sys
+
+          USERNAME = "${{ secrets.PA_USERNAME }}"
+          PASSWORD = "${{ secrets.PA_PASSWORD }}"
+          DOMAIN   = "OmarSW.pythonanywhere.com"
+
+          session = requests.Session()
+
+          # Step 1: Get CSRF token from login page
+          r = session.get("https://www.pythonanywhere.com/login/")
+          csrf = re.search(r'name="csrfmiddlewaretoken"\s+value="([^"]+)"', r.text)
+          if not csrf:
+              print("ERROR: Could not find CSRF token")
+              sys.exit(1)
+          csrf_token = csrf.group(1)
+          print(f"Got CSRF token: {csrf_token[:10]}...")
+
+          # Step 2: Login
+          r = session.post("https://www.pythonanywhere.com/login/", data={
+              "csrfmiddlewaretoken": csrf_token,
+              "auth-username": USERNAME,
+              "auth-password": PASSWORD,
+              "login_view-current_step": "auth",
+          }, headers={"Referer": "https://www.pythonanywhere.com/login/"})
+
+          if "dashboard" not in r.url and r.status_code != 200:
+              print(f"ERROR: Login failed - status {r.status_code}")
+              sys.exit(1)
+          print("Logged in successfully")
+
+          # Step 3: Extend webapp
+          csrf2 = session.cookies.get("csrftoken", csrf_token)
+          r = session.post(
+              f"https://www.pythonanywhere.com/user/{USERNAME}/webapps/{DOMAIN}/extend/",
+              data={"csrfmiddlewaretoken": csrf2},
+              headers={"Referer": f"https://www.pythonanywhere.com/user/{USERNAME}/webapps/"}
+          )
+          print(f"Extend status: {r.status_code}")
+          if r.status_code in [200, 201, 302]:
+              print("SUCCESS: Webapp extended!")
+          else:
+              print(f"Response: {r.text[:300]}")
+              sys.exit(1)
+          EOF

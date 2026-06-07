@@ -7,8 +7,8 @@ class User(AbstractUser):
     ROLE_ADMIN = 'admin'
     ROLE_CASHIER = 'cashier'
     ROLE_CHOICES = [
-        (ROLE_ADMIN, 'مدير'),
-        (ROLE_CASHIER, 'كاشير'),
+        (ROLE_ADMIN, 'Admin'),
+        (ROLE_CASHIER, 'Cashier'),
     ]
     role = models.CharField(max_length=20, choices=ROLE_CHOICES, default=ROLE_CASHIER)
 
@@ -21,13 +21,13 @@ class User(AbstractUser):
 
 class FoodCategory(models.Model):
     MEAL_TYPE_CHOICES = [
-        ('breakfast', 'إفطار'),
-        ('lunch', 'غداء'),
-        ('dinner', 'عشاء'),
-        ('snack', 'سناك'),
+        ('breakfast', 'Breakfast'),
+        ('lunch', 'Lunch'),
+        ('dinner', 'Dinner'),
+        ('snack', 'Snack'),
     ]
-    name = models.CharField(max_length=100, verbose_name='اسم الفئة')
-    meal_type = models.CharField(max_length=20, choices=MEAL_TYPE_CHOICES, verbose_name='نوع الوجبة')
+    name = models.CharField(max_length=100)
+    meal_type = models.CharField(max_length=20, choices=MEAL_TYPE_CHOICES)
     is_active = models.BooleanField(default=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
@@ -60,35 +60,33 @@ class FoodItem(models.Model):
 
 class SubscriptionPlan(models.Model):
     GOAL_CHOICES = [
-        ('lose', 'إنقاص الوزن'),
-        ('gain', 'زيادة الوزن'),
+        ('lose', 'Lose Weight'),
+        ('gain', 'Gain Weight'),
     ]
     DAYS_CHOICES = [
-        (7, '7 أيام'),
-        (14, '14 يوم'),
-        (21, '21 يوم'),
-        (28, '28 يوم'),
+        (7, '7 Days'),
+        (14, '14 Days'),
+        (21, '21 Days'),
+        (28, '28 Days'),
     ]
 
-    goal = models.CharField(max_length=10, choices=GOAL_CHOICES, verbose_name='الهدف')
-    meals_per_day = models.IntegerField(verbose_name='عدد الوجبات يومياً')
-    days = models.IntegerField(choices=DAYS_CHOICES, verbose_name='عدد الأيام')
-    price = models.DecimalField(max_digits=10, decimal_places=2, verbose_name='السعر (ريال)')
+    goal = models.CharField(max_length=10, choices=GOAL_CHOICES)
+    meals_per_day = models.IntegerField()
+    days = models.IntegerField(choices=DAYS_CHOICES)
+    price = models.DecimalField(max_digits=10, decimal_places=2)
 
     class Meta:
-        verbose_name = 'خطة اشتراك'
-        verbose_name_plural = 'خطط الاشتراك'
         unique_together = ['goal', 'meals_per_day', 'days']
 
     def __str__(self):
-        return f"{self.get_goal_display()} - {self.meals_per_day} وجبة - {self.days} يوم"
+        return f"{self.get_goal_display()} - {self.meals_per_day} meals - {self.days} days"
 
 
 MEAL_TYPES = [
-    ('breakfast', 'إفطار'),
-    ('lunch', 'غداء'),
-    ('dinner', 'عشاء'),
-    ('snack', 'سناك'),
+    ('breakfast', 'Breakfast'),
+    ('lunch', 'Lunch'),
+    ('dinner', 'Dinner'),
+    ('snack', 'Snack'),
 ]
 
 

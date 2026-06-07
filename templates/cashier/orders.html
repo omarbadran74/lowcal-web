@@ -1,25 +1,25 @@
 {% extends 'base.html' %}
 {% load core_tags %}
-{% block title %}الطلبات اليومية - LowCal{% endblock %}
+{% block title %}Daily Orders - LowCal{% endblock %}
 {% block content %}
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-2xl font-bold text-gray-800">الطلبات اليومية</h1>
-        <p class="text-gray-500 text-sm mt-1">{{ orders|length }} طلب مُرسل</p>
+        <h1 class="text-2xl font-bold text-gray-800">Daily Orders</h1>
+        <p class="text-gray-500 text-sm mt-1">{{ orders|length }} submitted orders</p>
     </div>
     <div class="flex items-center gap-3">
         <form method="get" class="flex items-center gap-2">
-            <label class="text-sm font-semibold text-gray-600">اليوم:</label>
-            <input type="number" name="day" value="{{ selected_day|default:'' }}" min="1" placeholder="رقم اليوم"
-                class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 w-24">
-            <button type="submit" class="bg-orange-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-orange-600 transition">فلتر</button>
+            <label class="text-sm font-semibold text-gray-600">Day:</label>
+            <input type="number" name="day" value="{{ selected_day|default:'' }}" min="1" placeholder="Day number"
+                class="border border-gray-300 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 w-28">
+            <button type="submit" class="bg-orange-500 text-white px-3 py-1.5 rounded-lg text-sm font-bold hover:bg-orange-600 transition">Filter</button>
             {% if selected_day %}
-            <a href="{% url 'cashier:orders' %}" class="text-sm text-gray-400 hover:text-gray-600">× مسح</a>
+            <a href="{% url 'cashier:orders' %}" class="text-sm text-gray-400 hover:text-gray-600">× Clear</a>
             {% endif %}
         </form>
         <a href="{% url 'cashier:orders_export' %}{% if selected_day %}?day={{ selected_day }}{% endif %}"
            class="flex items-center gap-2 bg-green-500 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-green-600 transition">
-            📊 تصدير Excel
+            📊 Export Excel
         </a>
     </div>
 </div>
@@ -34,9 +34,9 @@
             </div>
             <div>
                 <p class="font-bold text-gray-800">{{ order.subscriber.name }}</p>
-                <p class="text-xs text-gray-400" dir="ltr">{{ order.subscriber.phone }}</p>
+                <p class="text-xs text-gray-400">{{ order.subscriber.phone }}</p>
             </div>
-            <span class="mr-auto text-xs font-bold {% if order.subscriber.plan.goal == 'lose' %}text-green-600{% else %}text-blue-600{% endif %}">
+            <span class="ml-auto text-xs font-bold {% if order.subscriber.plan.goal == 'lose' %}text-green-600{% else %}text-blue-600{% endif %}">
                 {{ order.subscriber.plan.get_goal_display }}
             </span>
         </div>
@@ -44,7 +44,7 @@
             {% for mt in order.meal_types %}
             <div class="text-sm">
                 <span class="text-gray-400 text-xs block">{{ meal_types_display|get_item:mt }}</span>
-                <span class="font-semibold text-gray-800">{{ order.selections|get_item:mt|default:"—" }}</span>
+                <span class="font-semibold text-gray-800" dir="auto">{{ order.selections|get_item:mt|default:"—" }}</span>
             </div>
             {% endfor %}
         </div>
@@ -53,8 +53,8 @@
 </div>
 {% else %}
 <div class="bg-white rounded-xl shadow-sm border border-gray-100 py-16 text-center">
-    <p class="text-gray-400 text-lg mb-2">لا توجد طلبات مُرسلة</p>
-    <p class="text-gray-300 text-sm">{% if selected_day %}لا توجد طلبات لليوم {{ selected_day }}{% else %}في انتظار إرسال المشتركين لطلباتهم{% endif %}</p>
+    <p class="text-gray-400 text-lg mb-2">No submitted orders</p>
+    <p class="text-gray-300 text-sm">{% if selected_day %}No orders for day {{ selected_day }}{% else %}Waiting for subscribers to submit their orders{% endif %}</p>
 </div>
 {% endif %}
 {% endblock %}

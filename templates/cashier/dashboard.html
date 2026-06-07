@@ -1,17 +1,17 @@
 {% extends 'base.html' %}
-{% block title %}لوحة الكاشير - LowCal{% endblock %}
+{% block title %}Subscribers - LowCal{% endblock %}
 {% block content %}
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-2xl font-bold text-gray-800">المشتركون</h1>
-        <p class="text-gray-500 text-sm mt-1">{{ subscribers.count }} مشترك</p>
+        <h1 class="text-2xl font-bold text-gray-800">Subscribers</h1>
+        <p class="text-gray-500 text-sm mt-1">{{ subscribers.count }} total</p>
     </div>
     <div class="flex gap-3">
         <a href="{% url 'cashier:orders' %}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-200 transition">
-            📋 الطلبات اليومية
+            📋 Daily Orders
         </a>
         <a href="{% url 'cashier:subscriber_create' %}" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition">
-            + مشترك جديد
+            + New Subscriber
         </a>
     </div>
 </div>
@@ -20,11 +20,11 @@
     <table class="w-full">
         <thead class="bg-gray-50 border-b border-gray-100">
             <tr>
-                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">الاسم</th>
-                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">الهاتف</th>
-                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">الخطة</th>
-                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">الوجبات المشمولة</th>
-                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">الأيام المُرسلة</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Name</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Phone</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Plan</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Meals</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Days Submitted</th>
                 <th class="px-5 py-3"></th>
             </tr>
         </thead>
@@ -32,10 +32,10 @@
             {% for sub in subscribers %}
             <tr class="hover:bg-gray-50 transition">
                 <td class="px-5 py-4 font-semibold text-gray-800">{{ sub.name }}</td>
-                <td class="px-5 py-4 text-gray-600 text-sm" dir="ltr">{{ sub.phone }}</td>
+                <td class="px-5 py-4 text-gray-600 text-sm">{{ sub.phone }}</td>
                 <td class="px-5 py-4">
                     <span class="px-2 py-1 rounded-full text-xs font-bold {% if sub.plan.goal == 'lose' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
-                        {{ sub.plan.get_goal_display }} · {{ sub.plan.meals_per_day }}و · {{ sub.plan.days }}ي
+                        {{ sub.plan.get_goal_display }} · {{ sub.plan.meals_per_day }}m · {{ sub.plan.days }}d
                     </span>
                 </td>
                 <td class="px-5 py-4 text-sm text-gray-600">{{ sub.get_meal_types_display_list|join:" + " }}</td>
@@ -46,15 +46,15 @@
                     </div>
                 </td>
                 <td class="px-5 py-4">
-                    <a href="{% url 'cashier:subscriber_detail' sub.pk %}" class="text-sm text-orange-500 hover:underline font-semibold">عرض التفاصيل</a>
+                    <a href="{% url 'cashier:subscriber_detail' sub.pk %}" class="text-sm text-orange-500 hover:underline font-semibold">View Details</a>
                 </td>
             </tr>
             {% empty %}
             <tr>
                 <td colspan="6" class="text-center py-12">
-                    <p class="text-gray-400 mb-3">لا يوجد مشتركون بعد</p>
+                    <p class="text-gray-400 mb-3">No subscribers yet</p>
                     <a href="{% url 'cashier:subscriber_create' %}" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition text-sm">
-                        أضف أول مشترك
+                        Add First Subscriber
                     </a>
                 </td>
             </tr>

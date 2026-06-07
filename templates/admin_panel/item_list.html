@@ -1,19 +1,19 @@
 {% extends 'base.html' %}
-{% block title %}الأطباق - LowCal{% endblock %}
+{% block title %}Dishes - LowCal{% endblock %}
 {% block content %}
 <div class="flex items-center justify-between mb-6">
     <div>
-        <h1 class="text-2xl font-bold text-gray-800">الأطباق</h1>
-        <p class="text-gray-500 text-sm mt-1">إدارة قائمة الطعام</p>
+        <h1 class="text-2xl font-bold text-gray-800">Dishes</h1>
+        <p class="text-gray-500 text-sm mt-1">{{ items.count }} dishes</p>
     </div>
     <a href="{% url 'admin_panel:item_create' %}" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition">
-        + إضافة طبق
+        + Add Dish
     </a>
 </div>
 
 <div class="mb-4 flex gap-2 flex-wrap">
     <a href="{% url 'admin_panel:item_list' %}" class="px-3 py-1.5 rounded-full text-sm font-semibold {% if not selected_category %}bg-orange-500 text-white{% else %}bg-white text-gray-600 border{% endif %}">
-        الكل
+        All
     </a>
     {% for cat in categories %}
     <a href="?category={{ cat.pk }}" class="px-3 py-1.5 rounded-full text-sm font-semibold {% if selected_category == cat.pk %}bg-orange-500 text-white{% else %}bg-white text-gray-600 border{% endif %}">
@@ -26,10 +26,10 @@
     <table class="w-full">
         <thead class="bg-gray-50 border-b border-gray-100">
             <tr>
-                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">الطبق</th>
-                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">الفئة</th>
-                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">السعرات</th>
-                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">الحالة</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Dish</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Categories</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Calories</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Status</th>
                 <th class="px-5 py-3"></th>
             </tr>
         </thead>
@@ -37,9 +37,9 @@
             {% for item in items %}
             <tr class="hover:bg-gray-50 transition">
                 <td class="px-5 py-4">
-                    <p class="font-semibold text-gray-800">{{ item.name }}</p>
+                    <p class="font-semibold text-gray-800" dir="auto">{{ item.name }}</p>
                     {% if item.description %}
-                    <p class="text-xs text-gray-400 mt-0.5">{{ item.description|truncatechars:60 }}</p>
+                    <p class="text-xs text-gray-400 mt-0.5" dir="auto">{{ item.description|truncatechars:60 }}</p>
                     {% endif %}
                 </td>
                 <td class="px-5 py-4">
@@ -55,28 +55,23 @@
                         {% endfor %}
                     </div>
                 </td>
-                <td class="px-5 py-4 text-gray-600">
-                    {% if item.calories %}{{ item.calories }} سعرة{% else %}—{% endif %}
+                <td class="px-5 py-4 text-gray-600">{% if item.calories %}{{ item.calories }} kcal{% else %}—{% endif %}</td>
+                <td class="px-5 py-4">
+                    {% if item.is_active %}<span class="text-green-600 text-xs font-bold">● Active</span>
+                    {% else %}<span class="text-gray-400 text-xs font-bold">● Inactive</span>{% endif %}
                 </td>
                 <td class="px-5 py-4">
-                    {% if item.is_active %}
-                    <span class="text-green-600 text-xs font-bold">● نشط</span>
-                    {% else %}
-                    <span class="text-gray-400 text-xs font-bold">● معطل</span>
-                    {% endif %}
-                </td>
-                <td class="px-5 py-4">
-                    <div class="flex items-center gap-2 justify-end">
-                        <a href="{% url 'admin_panel:item_edit' item.pk %}" class="text-sm text-blue-500 hover:underline font-semibold">تعديل</a>
-                        <form method="post" action="{% url 'admin_panel:item_delete' item.pk %}" onsubmit="return confirm('حذف هذا الطبق؟')">
+                    <div class="flex items-center gap-3">
+                        <a href="{% url 'admin_panel:item_edit' item.pk %}" class="text-sm text-blue-500 hover:underline font-semibold">Edit</a>
+                        <form method="post" action="{% url 'admin_panel:item_delete' item.pk %}" onsubmit="return confirm('Delete this dish?')">
                             {% csrf_token %}
-                            <button type="submit" class="text-sm text-red-500 hover:underline font-semibold">حذف</button>
+                            <button type="submit" class="text-sm text-red-500 hover:underline font-semibold">Delete</button>
                         </form>
                     </div>
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="5" class="text-center py-10 text-gray-400">لا توجد أطباق بعد</td></tr>
+            <tr><td colspan="5" class="text-center py-10 text-gray-400">No dishes yet</td></tr>
             {% endfor %}
         </tbody>
     </table>
