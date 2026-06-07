@@ -1,22 +1,28 @@
 {% extends 'base.html' %}
 {% block title %}Subscribers - LowCal{% endblock %}
 {% block content %}
-<div class="flex items-center justify-between mb-6">
+<div class="flex items-center justify-between mb-4">
     <div>
-        <h1 class="text-2xl font-bold text-gray-800">Subscribers</h1>
-        <p class="text-gray-500 text-sm mt-1">{{ subscribers.count }} total</p>
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Subscribers</h1>
+        <p class="text-gray-500 text-sm mt-0.5">{{ subscribers.count }} total</p>
     </div>
-    <div class="flex gap-3">
-        <a href="{% url 'cashier:orders' %}" class="bg-gray-100 text-gray-700 px-4 py-2 rounded-lg font-bold hover:bg-gray-200 transition">
-            📋 Daily Orders
+    <div class="flex gap-2">
+        <a href="{% url 'cashier:orders' %}" class="bg-gray-100 text-gray-700 px-3 py-2 rounded-lg font-bold hover:bg-gray-200 transition text-sm hidden sm:block">
+            📋 Orders
         </a>
-        <a href="{% url 'cashier:subscriber_create' %}" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition">
-            + New Subscriber
+        <a href="{% url 'cashier:subscriber_create' %}" class="bg-orange-500 text-white px-3 py-2 rounded-lg font-bold hover:bg-orange-600 transition text-sm">
+            + New
         </a>
     </div>
 </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+<!-- Mobile: link to orders -->
+<a href="{% url 'cashier:orders' %}" class="flex sm:hidden items-center gap-2 bg-gray-100 text-gray-700 px-4 py-2.5 rounded-xl font-semibold text-sm mb-4 hover:bg-gray-200 transition">
+    📋 Daily Orders
+</a>
+
+<!-- Desktop table -->
+<div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
     <table class="w-full">
         <thead class="bg-gray-50 border-b border-gray-100">
             <tr>
@@ -24,7 +30,7 @@
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Phone</th>
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Plan</th>
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Meals</th>
-                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Days Submitted</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Progress</th>
                 <th class="px-5 py-3"></th>
             </tr>
         </thead>
@@ -46,20 +52,43 @@
                     </div>
                 </td>
                 <td class="px-5 py-4">
-                    <a href="{% url 'cashier:subscriber_detail' sub.pk %}" class="text-sm text-orange-500 hover:underline font-semibold">View Details</a>
+                    <a href="{% url 'cashier:subscriber_detail' sub.pk %}" class="text-sm text-orange-500 hover:underline font-semibold">View →</a>
                 </td>
             </tr>
             {% empty %}
-            <tr>
-                <td colspan="6" class="text-center py-12">
-                    <p class="text-gray-400 mb-3">No subscribers yet</p>
-                    <a href="{% url 'cashier:subscriber_create' %}" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition text-sm">
-                        Add First Subscriber
-                    </a>
-                </td>
-            </tr>
+            <tr><td colspan="6" class="text-center py-10 text-gray-400">No subscribers yet</td></tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
+
+<!-- Mobile cards -->
+<div class="md:hidden space-y-3">
+    {% for sub in subscribers %}
+    <a href="{% url 'cashier:subscriber_detail' sub.pk %}" class="block bg-white rounded-xl shadow-sm border border-gray-100 p-4 hover:border-orange-200 transition">
+        <div class="flex items-start justify-between mb-2">
+            <div>
+                <p class="font-bold text-gray-800">{{ sub.name }}</p>
+                <p class="text-sm text-gray-400">{{ sub.phone }}</p>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-xs font-bold {% if sub.plan.goal == 'lose' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                {{ sub.plan.get_goal_display }}
+            </span>
+        </div>
+        <div class="flex items-center justify-between text-sm">
+            <span class="text-gray-500">{{ sub.plan.meals_per_day }} meals · {{ sub.plan.days }} days</span>
+            <span class="font-bold text-orange-500">{{ sub.submissions.count }}<span class="text-gray-400 font-normal"> / {{ sub.plan.days }} days</span></span>
+        </div>
+        <!-- Progress bar -->
+        <div class="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
+            <div class="h-full bg-orange-400 rounded-full" style="width: {% widthratio sub.submissions.count sub.plan.days 100 %}%"></div>
+        </div>
+    </a>
+    {% empty %}
+    <div class="text-center py-12 bg-white rounded-xl border border-gray-100">
+        <p class="text-gray-400 mb-3">No subscribers yet</p>
+        <a href="{% url 'cashier:subscriber_create' %}" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold text-sm">Add First Subscriber</a>
+    </div>
+    {% endfor %}
 </div>
 {% endblock %}

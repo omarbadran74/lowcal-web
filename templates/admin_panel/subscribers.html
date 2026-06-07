@@ -1,56 +1,81 @@
 {% extends 'base.html' %}
 {% block title %}Subscribers - LowCal{% endblock %}
 {% block content %}
-<div class="flex items-center justify-between mb-6">
+<div class="flex items-center justify-between mb-4">
     <div>
-        <h1 class="text-2xl font-bold text-gray-800">All Subscribers</h1>
-        <p class="text-gray-500 text-sm mt-1">{{ subscribers.count }} subscribers</p>
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-800">All Subscribers</h1>
+        <p class="text-gray-500 text-sm">{{ subscribers.count }} subscribers</p>
     </div>
-    <a href="{% url 'cashier:subscriber_create' %}" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition">
-        + New Subscriber
-    </a>
+    <a href="{% url 'cashier:subscriber_create' %}" class="bg-orange-500 text-white px-3 py-2 rounded-lg font-bold hover:bg-orange-600 transition text-sm">+ New</a>
 </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+<!-- Desktop table -->
+<div class="hidden lg:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
     <table class="w-full">
         <thead class="bg-gray-50 border-b border-gray-100">
             <tr>
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Name</th>
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Phone</th>
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Plan</th>
-                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Meals</th>
-                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Start Date</th>
-                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Created By</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Start</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">By</th>
                 <th class="px-5 py-3"></th>
             </tr>
         </thead>
         <tbody class="divide-y divide-gray-50">
             {% for sub in subscribers %}
-            <tr class="hover:bg-gray-50 transition">
-                <td class="px-5 py-4 font-semibold text-gray-800">{{ sub.name }}</td>
-                <td class="px-5 py-4 text-gray-600 text-sm">{{ sub.phone }}</td>
-                <td class="px-5 py-4">
-                    <span class="px-2 py-1 rounded-full text-xs font-bold {% if sub.plan.goal == 'lose' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
-                        {{ sub.plan }}
+            <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3 font-semibold text-gray-800">{{ sub.name }}</td>
+                <td class="px-5 py-3 text-sm text-gray-600">{{ sub.phone }}</td>
+                <td class="px-5 py-3">
+                    <span class="px-2 py-0.5 rounded-full text-xs font-bold {% if sub.plan.goal == 'lose' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                        {{ sub.plan.get_goal_display }}
                     </span>
                 </td>
-                <td class="px-5 py-4 text-sm text-gray-600">{{ sub.get_meal_types_display_list|join:", " }}</td>
-                <td class="px-5 py-4 text-sm text-gray-500">{{ sub.start_date|date:"d/m/Y" }}</td>
-                <td class="px-5 py-4 text-sm text-gray-400">{{ sub.created_by.username|default:"—" }}</td>
-                <td class="px-5 py-4">
-                    <div class="flex items-center gap-3">
-                        <a href="{% url 'cashier:subscriber_detail' sub.pk %}" class="text-sm text-orange-500 hover:underline font-semibold">View</a>
-                        <form method="post" action="{% url 'admin_panel:subscriber_delete' sub.pk %}" onsubmit="return confirm('Delete {{ sub.name }}?')">
-                            {% csrf_token %}
-                            <button type="submit" class="text-sm text-red-500 hover:underline font-semibold">Delete</button>
+                <td class="px-5 py-3 text-sm text-gray-500">{{ sub.start_date|date:"d/m/Y" }}</td>
+                <td class="px-5 py-3 text-sm text-gray-400">{{ sub.created_by.username|default:"—" }}</td>
+                <td class="px-5 py-3">
+                    <div class="flex gap-3">
+                        <a href="{% url 'cashier:subscriber_detail' sub.pk %}" class="text-sm text-orange-500 font-semibold">View</a>
+                        <form method="post" action="{% url 'admin_panel:subscriber_delete' sub.pk %}" onsubmit="return confirm('Delete?')">
+                            {% csrf_token %}<button class="text-sm text-red-500 font-semibold">Delete</button>
                         </form>
                     </div>
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="7" class="text-center py-10 text-gray-400">No subscribers yet</td></tr>
+            <tr><td colspan="6" class="text-center py-10 text-gray-400">No subscribers</td></tr>
             {% endfor %}
         </tbody>
     </table>
+</div>
+
+<!-- Mobile/Tablet cards -->
+<div class="lg:hidden space-y-2">
+    {% for sub in subscribers %}
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+        <div class="flex items-start justify-between mb-2">
+            <div>
+                <p class="font-bold text-gray-800">{{ sub.name }}</p>
+                <p class="text-sm text-gray-400">{{ sub.phone }}</p>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-xs font-bold {% if sub.plan.goal == 'lose' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                {{ sub.plan.get_goal_display }}
+            </span>
+        </div>
+        <div class="flex items-center justify-between text-xs text-gray-400 mb-3">
+            <span>{{ sub.plan.meals_per_day }} meals · {{ sub.plan.days }} days</span>
+            <span>{{ sub.start_date|date:"d/m/Y" }}</span>
+        </div>
+        <div class="flex gap-2 pt-2 border-t border-gray-50">
+            <a href="{% url 'cashier:subscriber_detail' sub.pk %}" class="flex-1 text-center bg-orange-50 text-orange-600 font-bold text-sm py-1.5 rounded-lg">View</a>
+            <form method="post" action="{% url 'admin_panel:subscriber_delete' sub.pk %}" onsubmit="return confirm('Delete {{ sub.name }}?')" class="flex-1">
+                {% csrf_token %}<button class="w-full text-center bg-red-50 text-red-500 font-bold text-sm py-1.5 rounded-lg">Delete</button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-10 text-gray-400 bg-white rounded-xl">No subscribers</div>
+    {% endfor %}
 </div>
 {% endblock %}

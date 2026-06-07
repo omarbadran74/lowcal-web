@@ -1,53 +1,36 @@
 {% extends 'base.html' %}
-{% block title %}Subscription Plans - LowCal{% endblock %}
+{% block title %}Plans - LowCal{% endblock %}
 {% block content %}
-<div class="flex items-center justify-between mb-6">
-    <div>
-        <h1 class="text-2xl font-bold text-gray-800">Subscription Plans</h1>
-        <p class="text-gray-500 text-sm mt-1">Pricing by goal, meals and days</p>
-    </div>
-    <a href="{% url 'admin_panel:plan_create' %}" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition">
-        + Add Plan
-    </a>
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Subscription Plans</h1>
+    <a href="{% url 'admin_panel:plan_create' %}" class="bg-orange-500 text-white px-3 py-2 rounded-lg font-bold hover:bg-orange-600 transition text-sm">+ Add</a>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
     {% regroup plans by goal as goal_groups %}
     {% for group in goal_groups %}
     <div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-5 py-3 {% if group.grouper == 'lose' %}bg-green-500{% else %}bg-blue-500{% endif %}">
-            <h2 class="text-white font-bold">
+            <h2 class="text-white font-bold text-sm">
                 {% if group.grouper == 'lose' %}🥗 Lose Weight{% else %}💪 Gain Weight{% endif %}
             </h2>
         </div>
-        <table class="w-full">
-            <thead class="bg-gray-50 border-b border-gray-100">
-                <tr>
-                    <th class="text-left px-4 py-2 text-xs font-bold text-gray-500">Meals/Day</th>
-                    <th class="text-left px-4 py-2 text-xs font-bold text-gray-500">Days</th>
-                    <th class="text-left px-4 py-2 text-xs font-bold text-gray-500">Price</th>
-                    <th class="px-4 py-2"></th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-50">
-                {% for plan in group.list %}
-                <tr class="hover:bg-gray-50">
-                    <td class="px-4 py-3 font-semibold">{{ plan.meals_per_day }} meals</td>
-                    <td class="px-4 py-3 text-gray-600">{{ plan.days }} days</td>
-                    <td class="px-4 py-3 font-bold text-orange-600">QAR {{ plan.price }}</td>
-                    <td class="px-4 py-3">
-                        <div class="flex gap-3">
-                            <a href="{% url 'admin_panel:plan_edit' plan.pk %}" class="text-xs text-blue-500 hover:underline font-semibold">Edit</a>
-                            <form method="post" action="{% url 'admin_panel:plan_delete' plan.pk %}" onsubmit="return confirm('Delete this plan?')">
-                                {% csrf_token %}
-                                <button type="submit" class="text-xs text-red-500 hover:underline font-semibold">Delete</button>
-                            </form>
-                        </div>
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        <div class="divide-y divide-gray-50">
+            {% for plan in group.list %}
+            <div class="flex items-center px-4 py-3 hover:bg-gray-50">
+                <div class="flex-1">
+                    <span class="font-semibold text-sm text-gray-800">{{ plan.meals_per_day }} meals × {{ plan.days }} days</span>
+                </div>
+                <span class="font-bold text-orange-600 text-sm mr-4">QAR {{ plan.price }}</span>
+                <div class="flex gap-3">
+                    <a href="{% url 'admin_panel:plan_edit' plan.pk %}" class="text-xs text-blue-500 font-semibold">Edit</a>
+                    <form method="post" action="{% url 'admin_panel:plan_delete' plan.pk %}" onsubmit="return confirm('Delete?')">
+                        {% csrf_token %}<button class="text-xs text-red-500 font-semibold">Del</button>
+                    </form>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
     </div>
     {% empty %}
     <div class="col-span-2 text-center py-10 text-gray-400 bg-white rounded-xl">No plans yet</div>

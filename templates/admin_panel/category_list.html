@@ -1,22 +1,18 @@
 {% extends 'base.html' %}
 {% block title %}Categories - LowCal{% endblock %}
 {% block content %}
-<div class="flex items-center justify-between mb-6">
-    <div>
-        <h1 class="text-2xl font-bold text-gray-800">Categories</h1>
-        <p class="text-gray-500 text-sm mt-1">Manage meal categories</p>
-    </div>
-    <a href="{% url 'admin_panel:category_create' %}" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition">
-        + Add Category
-    </a>
+<div class="flex items-center justify-between mb-4">
+    <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Categories</h1>
+    <a href="{% url 'admin_panel:category_create' %}" class="bg-orange-500 text-white px-3 py-2 rounded-lg font-bold hover:bg-orange-600 transition text-sm">+ Add</a>
 </div>
 
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+<!-- Desktop table -->
+<div class="hidden md:block bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
     <table class="w-full">
         <thead class="bg-gray-50 border-b border-gray-100">
             <tr>
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Category</th>
-                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Meal Type</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Type</th>
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Dishes</th>
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Status</th>
                 <th class="px-5 py-3"></th>
@@ -24,10 +20,10 @@
         </thead>
         <tbody class="divide-y divide-gray-50">
             {% for cat in categories %}
-            <tr class="hover:bg-gray-50 transition">
-                <td class="px-5 py-4 font-semibold text-gray-800">{{ cat.name }}</td>
-                <td class="px-5 py-4">
-                    <span class="px-2 py-1 rounded-full text-xs font-bold
+            <tr class="hover:bg-gray-50">
+                <td class="px-5 py-3 font-semibold text-gray-800">{{ cat.name }}</td>
+                <td class="px-5 py-3">
+                    <span class="px-2 py-0.5 rounded-full text-xs font-bold
                         {% if cat.meal_type == 'breakfast' %}bg-yellow-100 text-yellow-700
                         {% elif cat.meal_type == 'lunch' %}bg-green-100 text-green-700
                         {% elif cat.meal_type == 'dinner' %}bg-blue-100 text-blue-700
@@ -35,20 +31,16 @@
                         {{ cat.get_meal_type_display }}
                     </span>
                 </td>
-                <td class="px-5 py-4 text-gray-600">{{ cat.items.count }} dishes</td>
-                <td class="px-5 py-4">
-                    {% if cat.is_active %}
-                    <span class="text-green-600 text-xs font-bold">● Active</span>
-                    {% else %}
-                    <span class="text-gray-400 text-xs font-bold">● Inactive</span>
-                    {% endif %}
+                <td class="px-5 py-3 text-gray-600 text-sm">{{ cat.items.count }}</td>
+                <td class="px-5 py-3">
+                    {% if cat.is_active %}<span class="text-green-600 text-xs font-bold">● Active</span>
+                    {% else %}<span class="text-gray-400 text-xs font-bold">● Off</span>{% endif %}
                 </td>
-                <td class="px-5 py-4">
-                    <div class="flex items-center gap-3">
-                        <a href="{% url 'admin_panel:category_edit' cat.pk %}" class="text-sm text-blue-500 hover:underline font-semibold">Edit</a>
-                        <form method="post" action="{% url 'admin_panel:category_delete' cat.pk %}" onsubmit="return confirm('Delete this category?')">
-                            {% csrf_token %}
-                            <button type="submit" class="text-sm text-red-500 hover:underline font-semibold">Delete</button>
+                <td class="px-5 py-3">
+                    <div class="flex gap-3">
+                        <a href="{% url 'admin_panel:category_edit' cat.pk %}" class="text-sm text-blue-500 font-semibold">Edit</a>
+                        <form method="post" action="{% url 'admin_panel:category_delete' cat.pk %}" onsubmit="return confirm('Delete?')">
+                            {% csrf_token %}<button type="submit" class="text-sm text-red-500 font-semibold">Delete</button>
                         </form>
                     </div>
                 </td>
@@ -58,5 +50,34 @@
             {% endfor %}
         </tbody>
     </table>
+</div>
+
+<!-- Mobile cards -->
+<div class="md:hidden space-y-2">
+    {% for cat in categories %}
+    <div class="bg-white rounded-xl border border-gray-100 shadow-sm p-4">
+        <div class="flex items-center justify-between mb-2">
+            <div>
+                <p class="font-bold text-gray-800">{{ cat.name }}</p>
+                <p class="text-xs text-gray-400">{{ cat.items.count }} dishes</p>
+            </div>
+            <span class="px-2 py-0.5 rounded-full text-xs font-bold
+                {% if cat.meal_type == 'breakfast' %}bg-yellow-100 text-yellow-700
+                {% elif cat.meal_type == 'lunch' %}bg-green-100 text-green-700
+                {% elif cat.meal_type == 'dinner' %}bg-blue-100 text-blue-700
+                {% else %}bg-purple-100 text-purple-700{% endif %}">
+                {{ cat.get_meal_type_display }}
+            </span>
+        </div>
+        <div class="flex gap-3 pt-2 border-t border-gray-50">
+            <a href="{% url 'admin_panel:category_edit' cat.pk %}" class="flex-1 text-center text-sm text-blue-500 font-semibold py-1">Edit</a>
+            <form method="post" action="{% url 'admin_panel:category_delete' cat.pk %}" onsubmit="return confirm('Delete?')" class="flex-1">
+                {% csrf_token %}<button type="submit" class="w-full text-sm text-red-500 font-semibold py-1">Delete</button>
+            </form>
+        </div>
+    </div>
+    {% empty %}
+    <div class="text-center py-10 text-gray-400 bg-white rounded-xl">No categories yet</div>
+    {% endfor %}
 </div>
 {% endblock %}

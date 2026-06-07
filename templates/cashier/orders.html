@@ -5,88 +5,79 @@
 
 <div class="flex items-center justify-between mb-4">
     <div>
-        <h1 class="text-2xl font-bold text-gray-800">Daily Orders</h1>
+        <h1 class="text-xl sm:text-2xl font-bold text-gray-800">Daily Orders</h1>
         <p class="text-gray-500 text-sm mt-0.5">{{ orders|length }} order{% if orders|length != 1 %}s{% endif %}</p>
     </div>
     <a href="{% url 'cashier:orders_export' %}{% if selected_day or name_filter or plan_filter %}?{% if selected_day %}day={{ selected_day }}&{% endif %}{% if name_filter %}name={{ name_filter }}&{% endif %}{% if plan_filter %}plan={{ plan_filter }}{% endif %}{% endif %}"
-       class="flex items-center gap-2 bg-green-500 text-white px-4 py-2 rounded-lg text-sm font-bold hover:bg-green-600 transition">
-        📊 Export Excel
+       class="flex items-center gap-1.5 bg-green-500 text-white px-3 py-2 rounded-lg text-sm font-bold hover:bg-green-600 transition">
+        📊 <span class="hidden sm:inline">Export</span> Excel
     </a>
 </div>
 
 <!-- Filters -->
-<form method="get" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-5">
-    <div class="flex flex-wrap gap-3 items-end">
+<form method="get" class="bg-white rounded-xl shadow-sm border border-gray-100 p-4 mb-4">
+    <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
         <div>
             <label class="block text-xs font-bold text-gray-500 mb-1">DAY</label>
-            <input type="number" name="day" value="{{ selected_day }}" min="1" placeholder="All days"
-                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 w-28">
-        </div>
-        <div>
-            <label class="block text-xs font-bold text-gray-500 mb-1">CUSTOMER NAME</label>
-            <input type="text" name="name" value="{{ name_filter }}" placeholder="Search by name..."
-                class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 w-44">
+            <input type="number" name="day" value="{{ selected_day }}" min="1" placeholder="All"
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300">
         </div>
         <div>
             <label class="block text-xs font-bold text-gray-500 mb-1">PLAN</label>
-            <select name="plan" class="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300 w-40">
+            <select name="plan" class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300">
                 <option value="">All Plans</option>
                 {% for value, label in goal_choices %}
                 <option value="{{ value }}" {% if plan_filter == value %}selected{% endif %}>{{ label }}</option>
                 {% endfor %}
             </select>
         </div>
-        <button type="submit" class="bg-orange-500 text-white px-5 py-2 rounded-lg text-sm font-bold hover:bg-orange-600 transition">
-            Filter
-        </button>
-        {% if selected_day or name_filter or plan_filter %}
-        <a href="{% url 'cashier:orders' %}" class="text-sm text-gray-400 hover:text-gray-600 py-2">× Clear all</a>
-        {% endif %}
+        <div class="col-span-2 sm:col-span-1">
+            <label class="block text-xs font-bold text-gray-500 mb-1">CUSTOMER</label>
+            <input type="text" name="name" value="{{ name_filter }}" placeholder="Search name..."
+                class="w-full border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-orange-300">
+        </div>
+        <div class="col-span-2 sm:col-span-1 flex items-end gap-2">
+            <button type="submit" class="flex-1 bg-orange-500 text-white py-2 rounded-lg text-sm font-bold hover:bg-orange-600 transition">Filter</button>
+            {% if selected_day or name_filter or plan_filter %}
+            <a href="{% url 'cashier:orders' %}" class="flex-1 bg-gray-100 text-gray-600 py-2 rounded-lg text-sm font-bold hover:bg-gray-200 transition text-center">Clear</a>
+            {% endif %}
+        </div>
     </div>
 </form>
 
 {% if orders %}
 <div class="space-y-2">
     {% for order in orders %}
-    <div class="bg-white rounded-xl shadow-sm border {% if order.delivered %}border-green-300{% else %}border-gray-100{% endif %} overflow-hidden transition-all"
+    <div class="bg-white rounded-xl shadow-sm border {% if order.delivered %}border-green-300{% else %}border-gray-100{% endif %} overflow-hidden"
          id="order-{{ order.subscriber.pk }}-{{ order.day }}">
-        <div class="flex items-center gap-4 px-5 py-3 {% if order.delivered %}bg-green-50{% else %}bg-gray-50{% endif %} border-b border-gray-100">
-            <!-- Day badge -->
-            <div class="w-9 h-9 bg-orange-100 rounded-full flex items-center justify-center text-sm font-black text-orange-600 flex-shrink-0">
+
+        <!-- Header -->
+        <div class="flex items-center gap-3 px-4 py-3 {% if order.delivered %}bg-green-50{% else %}bg-gray-50{% endif %} border-b border-gray-100">
+            <div class="w-8 h-8 bg-orange-100 rounded-full flex items-center justify-center text-sm font-black text-orange-600 flex-shrink-0">
                 {{ order.day }}
             </div>
-
-            <!-- Customer info -->
             <div class="flex-1 min-w-0">
-                <p class="font-bold text-gray-800">{{ order.subscriber.name }}</p>
+                <p class="font-bold text-gray-800 text-sm">{{ order.subscriber.name }}</p>
                 <p class="text-xs text-gray-400">{{ order.subscriber.phone }}</p>
             </div>
-
-            <!-- Plan badge -->
-            <span class="text-xs font-bold px-2 py-0.5 rounded-full {% if order.subscriber.plan.goal == 'lose' %}text-green-700 bg-green-100{% else %}text-blue-700 bg-blue-100{% endif %}">
+            <span class="text-xs font-bold hidden sm:block {% if order.subscriber.plan.goal == 'lose' %}text-green-700{% else %}text-blue-700{% endif %}">
                 {{ order.subscriber.plan.get_goal_display }}
             </span>
-
-            <!-- Done button -->
             <button
                 onclick="toggleDelivery({{ order.subscriber.pk }}, {{ order.day }}, this)"
-                class="flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold transition-all
-                {% if order.delivered %}bg-green-500 text-white hover:bg-green-600{% else %}bg-gray-200 text-gray-600 hover:bg-orange-100 hover:text-orange-600{% endif %}"
+                class="flex-shrink-0 flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all
+                {% if order.delivered %}bg-green-500 text-white{% else %}bg-gray-200 text-gray-600 hover:bg-orange-100 hover:text-orange-600{% endif %}"
                 id="btn-{{ order.subscriber.pk }}-{{ order.day }}">
-                {% if order.delivered %}
-                ✓ Done
-                {% else %}
-                ○ Mark Done
-                {% endif %}
+                {% if order.delivered %}✓ Done{% else %}○ Done{% endif %}
             </button>
         </div>
 
-        <!-- Meal selections -->
-        <div class="px-5 py-3 flex gap-8 flex-wrap">
+        <!-- Meals -->
+        <div class="px-4 py-3 grid grid-cols-2 sm:flex sm:gap-8 gap-3">
             {% for mt in order.meal_types %}
             <div>
                 <p class="text-xs font-bold text-gray-400 uppercase tracking-wide">{{ meal_types_display|get_item:mt }}</p>
-                <p class="font-semibold text-gray-800 mt-0.5" dir="auto">{{ order.selections|get_item:mt|default:"—" }}</p>
+                <p class="font-semibold text-gray-800 text-sm mt-0.5" dir="auto">{{ order.selections|get_item:mt|default:"—" }}</p>
             </div>
             {% endfor %}
         </div>
@@ -94,15 +85,11 @@
     {% endfor %}
 </div>
 {% else %}
-<div class="bg-white rounded-xl shadow-sm border border-gray-100 py-16 text-center">
-    <div class="text-5xl mb-3">📋</div>
-    <p class="text-gray-500 font-semibold text-lg">No orders found</p>
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 py-14 text-center">
+    <div class="text-4xl mb-3">📋</div>
+    <p class="text-gray-500 font-semibold">No orders found</p>
     <p class="text-gray-400 text-sm mt-1">
-        {% if selected_day or name_filter or plan_filter %}
-            Try clearing the filters
-        {% else %}
-            Waiting for subscribers to submit their orders
-        {% endif %}
+        {% if selected_day or name_filter or plan_filter %}Try clearing the filters{% else %}Waiting for subscribers to submit{% endif %}
     </p>
 </div>
 {% endif %}
@@ -115,7 +102,6 @@ function getCookie(name) {
     let v = document.cookie.match('(^|;) ?' + name + '=([^;]*)(;|$)');
     return v ? v[2] : null;
 }
-
 function toggleDelivery(subscriberId, day, btn) {
     fetch(`/cashier/orders/${subscriberId}/${day}/deliver/`, {
         method: 'POST',
@@ -124,20 +110,19 @@ function toggleDelivery(subscriberId, day, btn) {
     .then(r => r.json())
     .then(data => {
         const card = document.getElementById(`order-${subscriberId}-${day}`);
-        const header = card.querySelector('.flex.items-center.gap-4');
+        const header = card.querySelector('.flex.items-center.gap-3');
         if (data.delivered) {
-            btn.className = 'flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold transition-all bg-green-500 text-white hover:bg-green-600';
+            btn.className = btn.className.replace('bg-gray-200 text-gray-600 hover:bg-orange-100 hover:text-orange-600', 'bg-green-500 text-white');
             btn.innerHTML = '✓ Done';
             card.classList.replace('border-gray-100', 'border-green-300');
             header.classList.replace('bg-gray-50', 'bg-green-50');
         } else {
-            btn.className = 'flex items-center gap-2 px-4 py-1.5 rounded-full text-sm font-bold transition-all bg-gray-200 text-gray-600 hover:bg-orange-100 hover:text-orange-600';
-            btn.innerHTML = '○ Mark Done';
+            btn.className = btn.className.replace('bg-green-500 text-white', 'bg-gray-200 text-gray-600 hover:bg-orange-100 hover:text-orange-600');
+            btn.innerHTML = '○ Done';
             card.classList.replace('border-green-300', 'border-gray-100');
             header.classList.replace('bg-green-50', 'bg-gray-50');
         }
-    })
-    .catch(() => alert('Connection error'));
+    });
 }
 </script>
 {% endblock %}

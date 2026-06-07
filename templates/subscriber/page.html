@@ -9,68 +9,72 @@
     <style>
         body { font-family: 'Inter', sans-serif; }
         .lowcal-logo { font-family: 'Playfair Display', Georgia, serif; }
-        .meal-card { transition: all 0.2s; }
+        .meal-card { transition: all 0.15s; }
         .meal-card.selected { border-color: #FF6B00; background-color: #FFF7F0; }
     </style>
 </head>
-<body class="bg-gradient-to-b from-orange-50 to-amber-50 min-h-screen">
+<body class="bg-gray-50 min-h-screen">
 
 <!-- Header -->
 <div class="bg-white shadow-sm border-b border-orange-100 sticky top-0 z-50">
-    <div class="max-w-3xl mx-auto px-4 py-4 flex items-center justify-between">
+    <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
         <div class="flex flex-col items-center leading-none">
-            <div class="lowcal-logo" style="font-size:22px;color:#2B3920;letter-spacing:2px;line-height:1.1;">
-                Lo<span style="font-size:9px;vertical-align:middle;margin:0 1px;">&#10022;</span>wcal
+            <div class="lowcal-logo" style="font-size:20px;color:#2B3920;letter-spacing:2px;line-height:1.1;">
+                Lo<span style="font-size:8px;vertical-align:middle;margin:0 1px;">&#10022;</span>wcal
             </div>
-            <div style="display:flex;align-items:center;gap:4px;margin-top:2px;">
-                <div style="width:15px;height:0.7px;background:#8B4030;"></div>
-                <span class="lowcal-logo" style="font-size:6px;color:#8B4030;letter-spacing:2px;">Healthy Meals</span>
-                <div style="width:15px;height:0.7px;background:#8B4030;"></div>
+            <div style="display:flex;align-items:center;gap:3px;margin-top:1px;">
+                <div style="width:13px;height:0.6px;background:#8B4030;"></div>
+                <span class="lowcal-logo" style="font-size:5px;color:#8B4030;letter-spacing:1.5px;">Healthy Meals</span>
+                <div style="width:13px;height:0.6px;background:#8B4030;"></div>
             </div>
         </div>
         <div class="text-right">
             <p class="font-bold text-gray-800 text-sm">{{ subscriber.name }}</p>
-            <p class="text-xs text-gray-400">{{ plan.get_goal_display }} · {{ plan.meals_per_day }} meals · {{ plan.days }} days</p>
+            <p class="text-xs text-gray-400">{{ plan.get_goal_display }} · {{ plan.days }} days</p>
         </div>
     </div>
 </div>
 
-<!-- Stats -->
-<div class="max-w-3xl mx-auto px-4 pt-4">
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 flex items-center gap-6 mb-4">
+<!-- Stats bar -->
+<div class="max-w-2xl mx-auto px-4 pt-3">
+    <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 flex gap-4 mb-3">
         <div class="flex-1 text-center">
-            <p class="text-2xl font-black text-green-600" id="submitted-count">{{ submitted_count }}</p>
-            <p class="text-xs text-gray-400">Days Submitted</p>
+            <p class="text-xl font-black text-green-600">{{ submitted_count }}</p>
+            <p class="text-xs text-gray-400">Submitted</p>
         </div>
-        <div class="w-px h-10 bg-gray-200"></div>
+        <div class="w-px bg-gray-200"></div>
         <div class="flex-1 text-center">
-            <p class="text-2xl font-black text-gray-700">{{ plan.days }}</p>
+            <p class="text-xl font-black text-gray-700">{{ plan.days }}</p>
             <p class="text-xs text-gray-400">Total Days</p>
         </div>
-        <div class="w-px h-10 bg-gray-200"></div>
+        <div class="w-px bg-gray-200"></div>
         <div class="flex-1 text-center">
-            <p class="text-2xl font-black text-orange-500">{{ plan.meals_per_day }}</p>
+            <p class="text-xl font-black text-orange-500">{{ plan.meals_per_day }}</p>
             <p class="text-xs text-gray-400">Meals/Day</p>
         </div>
-        {% if subscriber.notes %}
-        <div class="w-px h-10 bg-gray-200"></div>
-        <div class="flex-1">
-            <p class="text-xs text-amber-700 font-semibold">📝 {{ subscriber.notes }}</p>
-        </div>
-        {% endif %}
     </div>
+
+    {% if subscriber.notes %}
+    <div class="bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 mb-3 text-xs text-amber-800 font-medium">
+        📝 {{ subscriber.notes }}
+    </div>
+    {% endif %}
 </div>
 
 <!-- Days -->
-<div class="max-w-3xl mx-auto px-4 pb-10 space-y-4">
+<div class="max-w-2xl mx-auto px-4 pb-8 space-y-3">
     {% for day_info in days_data %}
-    <div class="bg-white rounded-2xl shadow-sm border {% if day_info.submitted %}border-green-300{% else %}border-gray-100{% endif %} overflow-hidden"
+    <div class="bg-white rounded-2xl shadow-sm border {% if day_info.submitted %}border-green-300{% else %}border-gray-100{% endif %}"
          id="day-{{ day_info.day }}">
 
+        <!-- Day header -->
         <button onclick="toggleDay({{ day_info.day }})"
-            class="w-full flex items-center justify-between px-5 py-4 {% if day_info.submitted %}bg-green-50{% else %}bg-white{% endif %} hover:bg-gray-50 transition">
+            class="w-full flex items-center justify-between px-4 py-3.5 {% if day_info.submitted %}bg-green-50{% else %}bg-white{% endif %} rounded-2xl hover:bg-gray-50 transition">
             <div class="flex items-center gap-3">
-                <div class="w-10 h-10 rounded-full {% if day_info.submitted %}bg-green-500{% elif day_info.can_submit %}bg-orange-500{% else %}bg-gray-200{% endif %} flex items-center justify-center text-white font-black text-sm">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center font-black text-sm flex-shrink-0
+                    {% if day_info.submitted %}bg-green-500 text-white
+                    {% elif day_info.can_submit %}bg-orange-500 text-white
+                    {% else %}bg-gray-200 text-gray-600{% endif %}">
                     {% if day_info.submitted %}✓{% else %}{{ day_info.day }}{% endif %}
                 </div>
                 <div class="text-left">
@@ -84,48 +88,47 @@
                     {% endif %}
                 </div>
             </div>
-            <div class="flex items-center gap-3">
-                {% if day_info.submitted %}
-                <span class="text-xs font-bold text-green-700 bg-green-100 px-2 py-0.5 rounded-full">Submitted</span>
-                {% endif %}
-                <span class="text-gray-300 text-lg" id="arrow-{{ day_info.day }}">{% if not day_info.submitted %}▼{% else %}▶{% endif %}</span>
-            </div>
+            <span class="text-gray-300" id="arrow-{{ day_info.day }}">{% if not day_info.submitted %}▼{% else %}▶{% endif %}</span>
         </button>
 
+        <!-- Day content -->
         <div id="day-content-{{ day_info.day }}" {% if day_info.submitted %}class="hidden"{% endif %}>
-            <div class="px-5 pb-5 space-y-4">
+            <div class="px-4 pb-4 space-y-4 border-t border-gray-100 pt-3">
                 {% for meal in day_info.meals %}
                 <div>
                     <div class="flex items-center gap-2 mb-2">
-                        <span class="w-2 h-2 rounded-full bg-orange-400"></span>
+                        <span class="w-1.5 h-1.5 rounded-full bg-orange-400 flex-shrink-0"></span>
                         <p class="text-sm font-bold text-gray-700">{{ meal.meal_type_display }}</p>
                         {% if meal.selected_item %}
-                        <span class="text-xs text-green-600 font-semibold" dir="auto">✓ {{ meal.selected_item.name }}</span>
+                        <span class="text-xs text-green-600 font-semibold truncate" dir="auto">✓ {{ meal.selected_item.name }}</span>
                         {% endif %}
                     </div>
+
                     {% if not day_info.submitted %}
-                    <div class="grid grid-cols-1 gap-2">
+                    <div class="space-y-1.5">
                         {% if meal.food_items %}
                         {% for food in meal.food_items %}
-                        <label class="meal-card flex items-center gap-3 p-3 rounded-xl border-2 {% if meal.selected_item and meal.selected_item.id == food.id %}border-orange-400 bg-orange-50 selected{% else %}border-gray-200{% endif %} cursor-pointer hover:border-orange-300"
+                        <label class="meal-card flex items-center gap-3 p-3 rounded-xl border-2
+                            {% if meal.selected_item and meal.selected_item.id == food.id %}border-orange-400 bg-orange-50 selected{% else %}border-gray-200{% endif %}
+                            cursor-pointer active:scale-98 transition"
                                onclick="selectMeal({{ day_info.day }}, '{{ meal.meal_type }}', {{ food.id }}, this)">
                             <input type="radio" name="day_{{ day_info.day }}_{{ meal.meal_type }}"
                                    value="{{ food.id }}"
                                    {% if meal.selected_item and meal.selected_item.id == food.id %}checked{% endif %}
-                                   class="accent-orange-500">
-                            <div class="flex-1">
-                                <p class="font-semibold text-gray-800 text-sm" dir="auto">{{ food.name }}</p>
+                                   class="accent-orange-500 flex-shrink-0">
+                            <div class="flex-1 min-w-0">
+                                <p class="font-semibold text-gray-800 text-sm leading-tight" dir="auto">{{ food.name }}</p>
                                 {% if food.description %}
-                                <p class="text-xs text-gray-400 mt-0.5" dir="auto">{{ food.description|truncatechars:70 }}</p>
+                                <p class="text-xs text-gray-400 mt-0.5 truncate" dir="auto">{{ food.description }}</p>
                                 {% endif %}
                             </div>
                             {% if food.calories %}
-                            <span class="text-xs text-orange-500 font-bold flex-shrink-0">{{ food.calories }} kcal</span>
+                            <span class="text-xs text-orange-500 font-bold flex-shrink-0">{{ food.calories }}</span>
                             {% endif %}
                         </label>
                         {% endfor %}
                         {% else %}
-                        <p class="text-xs text-gray-400 py-2 px-3 bg-gray-50 rounded-lg">No dishes available for this meal</p>
+                        <p class="text-xs text-gray-400 py-2 px-3 bg-gray-50 rounded-lg">No dishes available</p>
                         {% endif %}
                     </div>
                     {% else %}
@@ -139,8 +142,8 @@
                 {% if not day_info.submitted %}
                 <button onclick="submitDay({{ day_info.day }})"
                     id="submit-btn-{{ day_info.day }}"
-                    class="w-full py-3 rounded-xl font-bold text-sm transition mt-2
-                    {% if day_info.can_submit %}bg-orange-500 text-white hover:bg-orange-600{% else %}bg-gray-200 text-gray-400 cursor-not-allowed{% endif %}"
+                    class="w-full py-3.5 rounded-xl font-bold text-sm transition mt-1
+                    {% if day_info.can_submit %}bg-orange-500 text-white active:bg-orange-600{% else %}bg-gray-200 text-gray-400 cursor-not-allowed{% endif %}"
                     {% if not day_info.can_submit %}disabled{% endif %}>
                     Submit Day {{ day_info.day }} →
                 </button>
@@ -157,19 +160,18 @@ const TOKEN = '{{ subscriber.token }}';
 function toggleDay(day) {
     const content = document.getElementById(`day-content-${day}`);
     const arrow = document.getElementById(`arrow-${day}`);
-    if (content.classList.contains('hidden')) {
-        content.classList.remove('hidden');
-        arrow.textContent = '▼';
-    } else {
-        content.classList.add('hidden');
-        arrow.textContent = '▶';
-    }
+    const isHidden = content.classList.contains('hidden');
+    content.classList.toggle('hidden', !isHidden);
+    arrow.textContent = isHidden ? '▼' : '▶';
 }
 
 function selectMeal(day, mealType, foodItemId, labelEl) {
-    const siblings = labelEl.closest('.grid').querySelectorAll('.meal-card');
-    siblings.forEach(el => el.classList.remove('selected', 'border-orange-400', 'bg-orange-50'));
+    labelEl.closest('.space-y-1\\.5, .space-y-2, .grid, div').querySelectorAll('.meal-card').forEach(el => {
+        el.classList.remove('selected', 'border-orange-400', 'bg-orange-50');
+        el.classList.add('border-gray-200');
+    });
     labelEl.classList.add('selected', 'border-orange-400', 'bg-orange-50');
+    labelEl.classList.remove('border-gray-200');
 
     fetch(`/s/${TOKEN}/select/`, {
         method: 'POST',
@@ -177,28 +179,26 @@ function selectMeal(day, mealType, foodItemId, labelEl) {
         body: JSON.stringify({ day, meal_type: mealType, food_item_id: foodItemId }),
     })
     .then(r => r.json())
-    .then(data => {
-        if (data.success) checkDayComplete(day);
-        else alert(data.error || 'Error occurred');
-    });
+    .then(data => { if (data.success) checkDayComplete(day); });
 }
 
 function checkDayComplete(day) {
     const dayEl = document.getElementById(`day-${day}`);
-    const radios = dayEl.querySelectorAll('input[type="radio"]');
     const groups = {};
-    radios.forEach(r => { if (!groups[r.name]) groups[r.name] = []; groups[r.name].push(r); });
+    dayEl.querySelectorAll('input[type="radio"]').forEach(r => {
+        if (!groups[r.name]) groups[r.name] = [];
+        groups[r.name].push(r);
+    });
     const allChecked = Object.values(groups).every(g => g.some(r => r.checked));
     const btn = document.getElementById(`submit-btn-${day}`);
     if (btn) {
         btn.disabled = !allChecked;
-        btn.className = `w-full py-3 rounded-xl font-bold text-sm transition mt-2 ${allChecked ? 'bg-orange-500 text-white hover:bg-orange-600' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`;
+        btn.className = `w-full py-3.5 rounded-xl font-bold text-sm transition mt-1 ${allChecked ? 'bg-orange-500 text-white active:bg-orange-600' : 'bg-gray-200 text-gray-400 cursor-not-allowed'}`;
     }
 }
 
 function submitDay(day) {
-    if (!confirm(`Submit Day ${day}? You won't be able to change your selections after submitting.`)) return;
-
+    if (!confirm(`Submit Day ${day}?\nYou won't be able to change your meals after submitting.`)) return;
     fetch(`/s/${TOKEN}/submit/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
@@ -209,16 +209,14 @@ function submitDay(day) {
         if (data.success) {
             const dayEl = document.getElementById(`day-${day}`);
             dayEl.classList.replace('border-gray-100', 'border-green-300');
-            const header = dayEl.querySelector('button');
-            header.classList.add('bg-green-50');
-            const circle = header.querySelector('.rounded-full');
-            circle.classList.remove('bg-orange-500', 'bg-gray-200');
-            circle.classList.add('bg-green-500');
+            const btn = dayEl.querySelector('button');
+            btn.classList.add('bg-green-50');
+            const circle = btn.querySelector('.rounded-full');
+            circle.classList.remove('bg-orange-500', 'bg-gray-200', 'text-gray-600');
+            circle.classList.add('bg-green-500', 'text-white');
             circle.textContent = '✓';
-            setTimeout(() => document.getElementById(`day-content-${day}`).classList.add('hidden'), 500);
-        } else {
-            alert(data.error || 'Error occurred');
-        }
+            setTimeout(() => document.getElementById(`day-content-${day}`).classList.add('hidden'), 400);
+        } else alert(data.error);
     });
 }
 

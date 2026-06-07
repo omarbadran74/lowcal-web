@@ -2,22 +2,23 @@
 {% load core_tags %}
 {% block title %}{{ subscriber.name }} - LowCal{% endblock %}
 {% block content %}
-<div class="mb-6">
+
+<div class="mb-4">
     <a href="{% url 'cashier:dashboard' %}" class="text-sm text-gray-400 hover:text-gray-600">← Subscribers</a>
-    <div class="flex items-start justify-between mt-2">
+    <div class="flex items-start justify-between mt-2 gap-3">
         <div>
-            <h1 class="text-2xl font-bold text-gray-800">{{ subscriber.name }}</h1>
-            <p class="text-gray-500 text-sm mt-0.5">{{ subscriber.phone }}</p>
+            <h1 class="text-xl sm:text-2xl font-bold text-gray-800">{{ subscriber.name }}</h1>
+            <p class="text-gray-500 text-sm">{{ subscriber.phone }}</p>
         </div>
-        <div class="flex items-center gap-3">
-            <span class="px-3 py-1 rounded-full text-sm font-bold {% if subscriber.plan.goal == 'lose' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
-                {{ subscriber.plan }}
+        <div class="flex items-center gap-2 flex-shrink-0">
+            <span class="px-2 py-1 rounded-full text-xs font-bold {% if subscriber.plan.goal == 'lose' %}bg-green-100 text-green-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                {{ subscriber.plan.get_goal_display }}
             </span>
             {% if user.is_admin_role %}
             <form method="post" action="{% url 'admin_panel:subscriber_delete' subscriber.pk %}"
-                  onsubmit="return confirm('Delete {{ subscriber.name }}? All data will be lost.')">
+                  onsubmit="return confirm('Delete {{ subscriber.name }}?')">
                 {% csrf_token %}
-                <button type="submit" class="bg-red-100 text-red-600 hover:bg-red-500 hover:text-white px-3 py-1 rounded-lg text-sm font-bold transition">
+                <button type="submit" class="bg-red-100 text-red-600 hover:bg-red-500 hover:text-white px-2 py-1 rounded-lg text-xs font-bold transition">
                     Delete
                 </button>
             </form>
@@ -27,56 +28,55 @@
 </div>
 
 <!-- Subscriber Link -->
-<div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl p-5 mb-6 text-white">
-    <p class="text-sm font-semibold mb-2 opacity-90">🔗 Subscriber's Personal Link</p>
-    <div class="flex items-center gap-3 bg-white/20 rounded-lg px-4 py-3">
-        <span class="text-sm font-mono flex-1 truncate" id="subscriber-url">{{ subscriber_url }}</span>
-        <button onclick="copyLink()" class="bg-white text-orange-600 px-3 py-1 rounded-lg text-sm font-bold hover:bg-orange-50 transition flex-shrink-0">
+<div class="bg-gradient-to-r from-orange-500 to-amber-500 rounded-xl p-4 mb-4 text-white">
+    <p class="text-xs font-semibold mb-2 opacity-90">🔗 Subscriber's Link</p>
+    <div class="flex items-center gap-2 bg-white/20 rounded-lg px-3 py-2">
+        <span class="text-xs font-mono flex-1 truncate" id="subscriber-url">{{ subscriber_url }}</span>
+        <button onclick="copyLink()" class="bg-white text-orange-600 px-3 py-1 rounded-lg text-xs font-bold hover:bg-orange-50 transition flex-shrink-0">
             Copy
         </button>
     </div>
-    <p class="text-xs mt-2 opacity-75">Send this link to the subscriber to let them choose their meals</p>
 </div>
 
 <!-- Stats -->
-<div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+    <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center">
         <p class="text-2xl font-black text-orange-500">{{ subscriber.plan.days }}</p>
-        <p class="text-xs text-gray-500 mt-1">Total Days</p>
+        <p class="text-xs text-gray-500 mt-0.5">Total Days</p>
     </div>
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
+    <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center">
         <p class="text-2xl font-black text-green-600">{{ subscriber.submissions.count }}</p>
-        <p class="text-xs text-gray-500 mt-1">Days Submitted</p>
+        <p class="text-xs text-gray-500 mt-0.5">Submitted</p>
     </div>
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
+    <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center">
         <p class="text-2xl font-black text-blue-600">{{ subscriber.plan.meals_per_day }}</p>
-        <p class="text-xs text-gray-500 mt-1">Meals/Day</p>
+        <p class="text-xs text-gray-500 mt-0.5">Meals/Day</p>
     </div>
-    <div class="bg-white rounded-xl p-4 shadow-sm border border-gray-100 text-center">
+    <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center">
         <p class="text-sm font-bold text-gray-700">{{ subscriber.start_date|date:"d/m/Y" }}</p>
-        <p class="text-xs text-gray-500 mt-1">Start Date</p>
+        <p class="text-xs text-gray-500 mt-0.5">Start Date</p>
     </div>
 </div>
 
 {% if subscriber.notes %}
-<div class="bg-amber-50 border border-amber-200 rounded-lg px-4 py-3 mb-6 text-sm text-amber-800">
+<div class="bg-amber-50 border border-amber-200 rounded-lg px-4 py-2.5 mb-4 text-sm text-amber-800">
     <span class="font-bold">Notes: </span>{{ subscriber.notes }}
 </div>
 {% endif %}
 
 <!-- Schedule -->
-<h2 class="text-lg font-bold text-gray-800 mb-3">Meal Schedule</h2>
+<h2 class="text-base font-bold text-gray-800 mb-2">Meal Schedule</h2>
 <div class="space-y-2">
     {% for day_info in days_data %}
-    <div class="bg-white rounded-xl border {% if day_info.submitted %}border-green-200 bg-green-50{% else %}border-gray-100{% endif %} overflow-hidden">
-        <div class="flex items-center justify-between px-5 py-3 {% if day_info.submitted %}bg-green-100/50{% else %}bg-gray-50{% endif %}">
-            <span class="font-bold text-gray-700">Day {{ day_info.day }}</span>
+    <div class="bg-white rounded-xl border {% if day_info.submitted %}border-green-200{% else %}border-gray-100{% endif %} overflow-hidden">
+        <div class="flex items-center justify-between px-4 py-3 {% if day_info.submitted %}bg-green-50{% else %}bg-gray-50{% endif %}">
+            <span class="font-bold text-gray-700 text-sm">Day {{ day_info.day }}</span>
             <div class="flex items-center gap-2">
                 {% if day_info.submitted %}
                 <span class="text-xs font-bold text-green-700 bg-green-200 px-2 py-0.5 rounded-full">✓ Submitted</span>
                 {% if user.is_admin_role %}
                 <form method="post" action="{% url 'admin_panel:reset_day' subscriber.pk day_info.day %}"
-                      onsubmit="return confirm('Reset Day {{ day_info.day }}? The subscriber will be able to change their meals and resubmit.')">
+                      onsubmit="return confirm('Reset Day {{ day_info.day }}?')">
                     {% csrf_token %}
                     <button type="submit" class="text-xs font-bold text-orange-600 bg-orange-100 hover:bg-orange-200 px-2 py-0.5 rounded-full transition">
                         ↺ Reset
@@ -89,15 +89,13 @@
             </div>
         </div>
         {% if day_info.submitted %}
-        <div class="px-5 py-3 flex gap-4 flex-wrap">
+        <div class="px-4 py-3 grid grid-cols-2 sm:flex sm:gap-6 gap-2">
             {% for mt in meal_types %}
-            <div class="text-sm">
-                <span class="text-gray-400 text-xs">{{ meal_types_display|get_item:mt }}: </span>
-                <span class="font-semibold text-gray-700" dir="auto">
-                    {% with item=day_info.selections|get_item:mt %}
-                        {% if item %}{{ item.name }}{% else %}—{% endif %}
-                    {% endwith %}
-                </span>
+            <div>
+                <p class="text-xs text-gray-400">{{ meal_types_display|get_item:mt }}</p>
+                <p class="font-semibold text-gray-800 text-sm" dir="auto">
+                    {% with item=day_info.selections|get_item:mt %}{% if item %}{{ item.name }}{% else %}—{% endif %}{% endwith %}
+                </p>
             </div>
             {% endfor %}
         </div>
