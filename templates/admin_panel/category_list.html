@@ -1,0 +1,62 @@
+{% extends 'base.html' %}
+{% block title %}فئات الطعام - LowCal{% endblock %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+    <div>
+        <h1 class="text-2xl font-bold text-gray-800">فئات الطعام</h1>
+        <p class="text-gray-500 text-sm mt-1">إدارة فئات الوجبات</p>
+    </div>
+    <a href="{% url 'admin_panel:category_create' %}" class="bg-orange-500 text-white px-4 py-2 rounded-lg font-bold hover:bg-orange-600 transition">
+        + إضافة فئة
+    </a>
+</div>
+
+<div class="bg-white rounded-xl shadow-sm border border-gray-100 overflow-hidden">
+    <table class="w-full">
+        <thead class="bg-gray-50 border-b border-gray-100">
+            <tr>
+                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">الفئة</th>
+                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">نوع الوجبة</th>
+                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">عدد الأطباق</th>
+                <th class="text-right px-5 py-3 text-sm font-bold text-gray-600">الحالة</th>
+                <th class="px-5 py-3"></th>
+            </tr>
+        </thead>
+        <tbody class="divide-y divide-gray-50">
+            {% for cat in categories %}
+            <tr class="hover:bg-gray-50 transition">
+                <td class="px-5 py-4 font-semibold text-gray-800">{{ cat.name }}</td>
+                <td class="px-5 py-4">
+                    <span class="px-2 py-1 rounded-full text-xs font-bold
+                        {% if cat.meal_type == 'breakfast' %}bg-yellow-100 text-yellow-700
+                        {% elif cat.meal_type == 'lunch' %}bg-green-100 text-green-700
+                        {% elif cat.meal_type == 'dinner' %}bg-blue-100 text-blue-700
+                        {% else %}bg-purple-100 text-purple-700{% endif %}">
+                        {{ cat.get_meal_type_display }}
+                    </span>
+                </td>
+                <td class="px-5 py-4 text-gray-600">{{ cat.items.count }} طبق</td>
+                <td class="px-5 py-4">
+                    {% if cat.is_active %}
+                    <span class="text-green-600 text-xs font-bold">● نشط</span>
+                    {% else %}
+                    <span class="text-gray-400 text-xs font-bold">● معطل</span>
+                    {% endif %}
+                </td>
+                <td class="px-5 py-4 text-left">
+                    <div class="flex items-center gap-2 justify-end">
+                        <a href="{% url 'admin_panel:category_edit' cat.pk %}" class="text-sm text-blue-500 hover:underline font-semibold">تعديل</a>
+                        <form method="post" action="{% url 'admin_panel:category_delete' cat.pk %}" onsubmit="return confirm('هل تريد حذف هذه الفئة؟')">
+                            {% csrf_token %}
+                            <button type="submit" class="text-sm text-red-500 hover:underline font-semibold">حذف</button>
+                        </form>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="text-center py-10 text-gray-400">لا توجد فئات بعد</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

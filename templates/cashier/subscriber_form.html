@@ -1,0 +1,84 @@
+{% extends 'base.html' %}
+{% block title %}مشترك جديد - LowCal{% endblock %}
+{% block content %}
+<div class="max-w-2xl">
+    <div class="mb-6">
+        <a href="{% url 'cashier:dashboard' %}" class="text-sm text-gray-400 hover:text-gray-600">← المشتركون</a>
+        <h1 class="text-2xl font-bold text-gray-800 mt-1">{{ title }}</h1>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-6">
+        <form method="post" class="space-y-5">
+            {% csrf_token %}
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">اسم المشترك <span class="text-red-500">*</span></label>
+                    <input type="text" name="name" required
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">رقم الهاتف <span class="text-red-500">*</span></label>
+                    <input type="text" name="phone" required dir="ltr"
+                        class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">خطة الاشتراك <span class="text-red-500">*</span></label>
+                <div class="grid grid-cols-1 gap-2 max-h-60 overflow-y-auto p-1">
+                    {% regroup plans by goal as goal_groups %}
+                    {% for group in goal_groups %}
+                    <div class="mb-2">
+                        <p class="text-xs font-bold text-gray-400 mb-1 px-1">
+                            {% if group.grouper == 'lose' %}🥗 إنقاص الوزن{% else %}💪 زيادة الوزن{% endif %}
+                        </p>
+                        {% for plan in group.list %}
+                        <label class="flex items-center gap-3 p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 cursor-pointer transition mb-1">
+                            <input type="radio" name="plan" value="{{ plan.pk }}" required class="accent-orange-500">
+                            <span class="text-sm font-semibold text-gray-700">
+                                {{ plan.meals_per_day }} وجبة × {{ plan.days }} يوم
+                            </span>
+                            <span class="mr-auto font-bold text-orange-600 text-sm">{{ plan.price }} ر.ق</span>
+                        </label>
+                        {% endfor %}
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">أنواع الوجبات المشمولة <span class="text-red-500">*</span></label>
+                <p class="text-xs text-gray-400 mb-2">اختر الوجبات التي ستُقدَّم للمشترك يومياً</p>
+                <div class="grid grid-cols-2 gap-2">
+                    {% for value, label in meal_types %}
+                    <label class="flex items-center gap-2 p-3 rounded-lg border border-gray-200 hover:border-orange-300 hover:bg-orange-50 cursor-pointer transition">
+                        <input type="checkbox" name="meal_types" value="{{ value }}" class="accent-orange-500 w-4 h-4">
+                        <span class="text-sm font-semibold text-gray-700">{{ label }}</span>
+                    </label>
+                    {% endfor %}
+                </div>
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">تاريخ بداية الاشتراك <span class="text-red-500">*</span></label>
+                <input type="date" name="start_date" required
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400">
+            </div>
+
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-1">ملاحظات</label>
+                <textarea name="notes" rows="2"
+                    class="w-full border border-gray-300 rounded-lg px-3 py-2.5 focus:outline-none focus:ring-2 focus:ring-orange-300 focus:border-orange-400"
+                    placeholder="حساسية، تفضيلات خاصة..."></textarea>
+            </div>
+
+            <div class="flex gap-3 pt-2">
+                <button type="submit" class="bg-orange-500 text-white px-6 py-2.5 rounded-lg font-bold hover:bg-orange-600 transition">
+                    إنشاء المشترك وتوليد الرابط
+                </button>
+                <a href="{% url 'cashier:dashboard' %}" class="bg-gray-100 text-gray-700 px-6 py-2.5 rounded-lg font-bold hover:bg-gray-200 transition">إلغاء</a>
+            </div>
+        </form>
+    </div>
+</div>
+{% endblock %}

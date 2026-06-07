@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block title %}لوحة الإدارة - LowCal{% endblock %}
+{% block content %}
+<div class="mb-6">
+    <h1 class="text-2xl font-bold text-gray-800">لوحة الإدارة</h1>
+    <p class="text-gray-500 text-sm mt-1">مرحباً بك في نظام LowCal</p>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-orange-100 flex items-center gap-4">
+        <div class="w-12 h-12 bg-orange-100 rounded-xl flex items-center justify-center text-2xl">👥</div>
+        <div>
+            <p class="text-3xl font-black text-orange-500">{{ total_subscribers }}</p>
+            <p class="text-sm text-gray-500">مشترك</p>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-green-100 flex items-center gap-4">
+        <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center text-2xl">🍽️</div>
+        <div>
+            <p class="text-3xl font-black text-green-600">{{ total_food_items }}</p>
+            <p class="text-sm text-gray-500">طبق نشط</p>
+        </div>
+    </div>
+    <div class="bg-white rounded-xl p-6 shadow-sm border border-blue-100 flex items-center gap-4">
+        <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center text-2xl">📂</div>
+        <div>
+            <p class="text-3xl font-black text-blue-600">{{ total_categories }}</p>
+            <p class="text-sm text-gray-500">فئة</p>
+        </div>
+    </div>
+</div>
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+        <div class="flex items-center justify-between mb-4">
+            <h2 class="font-bold text-gray-800">آخر المشتركين</h2>
+            <a href="{% url 'admin_panel:subscribers' %}" class="text-sm text-orange-500 hover:underline">عرض الكل</a>
+        </div>
+        <div class="space-y-2">
+            {% for sub in recent_subscribers %}
+            <div class="flex items-center justify-between py-2 border-b border-gray-50 last:border-0">
+                <div>
+                    <p class="font-semibold text-gray-800 text-sm">{{ sub.name }}</p>
+                    <p class="text-xs text-gray-400">{{ sub.plan }}</p>
+                </div>
+                <span class="text-xs text-gray-400">{{ sub.created_at|date:"d/m/Y" }}</span>
+            </div>
+            {% empty %}
+            <p class="text-sm text-gray-400 text-center py-4">لا يوجد مشتركون بعد</p>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+        <h2 class="font-bold text-gray-800 mb-4">روابط سريعة</h2>
+        <div class="grid grid-cols-2 gap-3">
+            <a href="{% url 'admin_panel:category_create' %}" class="flex items-center gap-2 p-3 rounded-lg bg-orange-50 hover:bg-orange-100 transition text-sm font-semibold text-orange-700">
+                ➕ فئة جديدة
+            </a>
+            <a href="{% url 'admin_panel:item_create' %}" class="flex items-center gap-2 p-3 rounded-lg bg-green-50 hover:bg-green-100 transition text-sm font-semibold text-green-700">
+                ➕ طبق جديد
+            </a>
+            <a href="{% url 'admin_panel:plan_list' %}" class="flex items-center gap-2 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition text-sm font-semibold text-blue-700">
+                📋 خطط الاشتراك
+            </a>
+            <a href="{% url 'cashier:subscriber_create' %}" class="flex items-center gap-2 p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition text-sm font-semibold text-purple-700">
+                👤 مشترك جديد
+            </a>
+        </div>
+    </div>
+</div>
+{% endblock %}

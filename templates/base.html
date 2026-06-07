@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}LowCal{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: '#FF6B00',
+                        secondary: '#4CAF50',
+                    },
+                    fontFamily: {
+                        arabic: ['Cairo', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Cairo', sans-serif; }
+        .btn-primary { @apply bg-primary text-white px-4 py-2 rounded-lg hover:bg-orange-600 transition font-semibold; }
+        .btn-secondary { @apply bg-gray-200 text-gray-700 px-4 py-2 rounded-lg hover:bg-gray-300 transition font-semibold; }
+        .btn-danger { @apply bg-red-500 text-white px-4 py-2 rounded-lg hover:bg-red-600 transition font-semibold; }
+        .card { @apply bg-white rounded-xl shadow-sm border border-gray-100 p-5; }
+        .form-input { @apply w-full border border-gray-300 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary/30 focus:border-primary text-gray-800; }
+        .form-label { @apply block text-sm font-semibold text-gray-700 mb-1; }
+    </style>
+    {% block extra_head %}{% endblock %}
+</head>
+<body class="bg-gray-50 min-h-screen">
+
+{% if user.is_authenticated %}
+<nav class="bg-white shadow-sm border-b border-gray-200 sticky top-0 z-50">
+    <div class="max-w-7xl mx-auto px-4 py-3 flex items-center justify-between">
+        <div class="flex items-center gap-6">
+            <span class="text-2xl font-black text-primary">LöwCAL</span>
+            <div class="flex gap-1">
+                {% if user.is_admin_role %}
+                <a href="{% url 'admin_panel:dashboard' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">لوحة الإدارة</a>
+                <a href="{% url 'admin_panel:category_list' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">الفئات</a>
+                <a href="{% url 'admin_panel:item_list' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">الأطباق</a>
+                <a href="{% url 'admin_panel:plan_list' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">الخطط</a>
+                {% endif %}
+                <a href="{% url 'cashier:dashboard' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">المشتركون</a>
+                <a href="{% url 'cashier:orders' %}" class="px-3 py-1.5 rounded-lg text-sm font-semibold hover:bg-orange-50 text-gray-600 hover:text-primary transition">الطلبات</a>
+            </div>
+        </div>
+        <div class="flex items-center gap-3">
+            <span class="text-sm text-gray-500">{{ user.get_full_name|default:user.username }}</span>
+            <span class="text-xs px-2 py-0.5 rounded-full {% if user.is_admin_role %}bg-orange-100 text-orange-700{% else %}bg-blue-100 text-blue-700{% endif %}">
+                {{ user.get_role_display }}
+            </span>
+            <a href="{% url 'logout' %}" class="text-sm text-gray-400 hover:text-red-500 transition">خروج</a>
+        </div>
+    </div>
+</nav>
+{% endif %}
+
+<main class="max-w-7xl mx-auto px-4 py-6">
+    {% if messages %}
+    <div class="mb-4 space-y-2">
+        {% for message in messages %}
+        <div class="px-4 py-3 rounded-lg text-sm font-semibold
+            {% if message.tags == 'error' %}bg-red-50 text-red-700 border border-red-200
+            {% else %}bg-green-50 text-green-700 border border-green-200{% endif %}">
+            {{ message }}
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+    {% block content %}{% endblock %}
+</main>
+
+{% block extra_scripts %}{% endblock %}
+</body>
+</html>
