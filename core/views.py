@@ -5,6 +5,7 @@ from django.http import JsonResponse, HttpResponseForbidden, HttpResponse
 from django.views.decorators.http import require_POST
 from django.views.decorators.csrf import ensure_csrf_cookie
 from django.contrib import messages
+from django.utils import timezone
 import json
 import openpyxl
 from openpyxl.styles import Font, PatternFill, Alignment
@@ -453,9 +454,15 @@ def subscriber_page(request, token):
             .values('id', 'name', 'calories', 'description')
         )
 
+    today = timezone.localdate()
+    days_elapsed = 0
+    if subscriber.start_date:
+        days_elapsed = max(0, (today - subscriber.start_date).days)
+
     days_data = []
     for day in range(1, subscriber.total_days() + 1):
         submitted = day in submitted_days
+        is_past = (day <= days_elapsed) and not submitted
         meals = []
         all_selected = True
         for mt in meal_types_list:
@@ -472,8 +479,9 @@ def subscriber_page(request, token):
         days_data.append({
             'day': day,
             'submitted': submitted,
+            'is_past': is_past,
             'meals': meals,
-            'can_submit': all_selected and not submitted,
+            'can_submit': all_selected and not submitted and not is_past,
         })
 
     return render(request, 'subscriber/page.html', {
@@ -482,6 +490,9 @@ def subscriber_page(request, token):
         'days_data': days_data,
         'meal_types_display': dict(MEAL_TYPES),
         'submitted_count': len(submitted_days),
+        'days_elapsed': days_elapsed,
+        'current_day': min(days_elapsed + 1, subscriber.total_days()),
+        'remaining_days': max(0, subscriber.total_days() - days_elapsed),
     })
 
 
