@@ -289,13 +289,16 @@ def subscriber_create(request):
         raw_days = request.POST.get('custom_days', '').strip()
         raw_price = request.POST.get('custom_price', '').strip()
         if name and phone and plan_id and meal_types and start_date:
-            custom_days = int(raw_days) if raw_days and raw_days.isdigit() else None
+            plan = SubscriptionPlan.objects.get(pk=plan_id)
+            cd = int(raw_days) if raw_days and raw_days.isdigit() else None
+            custom_days = cd if cd and cd != plan.days else None
             try:
-                custom_price = float(raw_price) if raw_price else None
+                cp = float(raw_price) if raw_price else None
+                custom_price = cp if cp and cp != float(plan.price) else None
             except ValueError:
                 custom_price = None
             subscriber = Subscriber.objects.create(
-                name=name, phone=phone, plan_id=plan_id,
+                name=name, phone=phone, plan=plan,
                 meal_types=','.join(meal_types),
                 start_date=start_date, notes=notes, created_by=request.user,
                 custom_days=custom_days, custom_price=custom_price,
@@ -324,14 +327,17 @@ def subscriber_edit(request, pk):
         raw_days = request.POST.get('custom_days', '').strip()
         raw_price = request.POST.get('custom_price', '').strip()
         if name and phone and plan_id and meal_types and start_date:
-            custom_days = int(raw_days) if raw_days and raw_days.isdigit() else None
+            plan = SubscriptionPlan.objects.get(pk=plan_id)
+            cd = int(raw_days) if raw_days and raw_days.isdigit() else None
+            custom_days = cd if cd and cd != plan.days else None
             try:
-                custom_price = float(raw_price) if raw_price else None
+                cp = float(raw_price) if raw_price else None
+                custom_price = cp if cp and cp != float(plan.price) else None
             except ValueError:
                 custom_price = None
             subscriber.name = name
             subscriber.phone = phone
-            subscriber.plan_id = plan_id
+            subscriber.plan = plan
             subscriber.meal_types = ','.join(meal_types)
             subscriber.start_date = start_date
             subscriber.notes = notes
