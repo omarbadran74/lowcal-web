@@ -286,11 +286,19 @@ def subscriber_create(request):
         meal_types = request.POST.getlist('meal_types')
         start_date = request.POST.get('start_date')
         notes = request.POST.get('notes', '').strip()
+        raw_days = request.POST.get('custom_days', '').strip()
+        raw_price = request.POST.get('custom_price', '').strip()
         if name and phone and plan_id and meal_types and start_date:
+            custom_days = int(raw_days) if raw_days and raw_days.isdigit() else None
+            try:
+                custom_price = float(raw_price) if raw_price else None
+            except ValueError:
+                custom_price = None
             subscriber = Subscriber.objects.create(
                 name=name, phone=phone, plan_id=plan_id,
                 meal_types=','.join(meal_types),
                 start_date=start_date, notes=notes, created_by=request.user,
+                custom_days=custom_days, custom_price=custom_price,
             )
             messages.success(request, f'Subscriber {name} created successfully!')
             return redirect('cashier:subscriber_detail', pk=subscriber.pk)

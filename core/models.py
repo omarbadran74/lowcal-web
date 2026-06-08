@@ -97,6 +97,8 @@ class Subscriber(models.Model):
     meal_types = models.CharField(max_length=100, verbose_name='أنواع الوجبات المشمولة')
     token = models.UUIDField(default=uuid.uuid4, unique=True, editable=False)
     start_date = models.DateField(verbose_name='تاريخ البداية')
+    custom_days = models.PositiveIntegerField(null=True, blank=True, verbose_name='أيام مخصصة')
+    custom_price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name='سعر مخصص')
     notes = models.TextField(blank=True, verbose_name='ملاحظات')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='أنشئ بواسطة')
     created_at = models.DateTimeField(auto_now_add=True)
@@ -117,7 +119,7 @@ class Subscriber(models.Model):
         return [type_map.get(m, m) for m in self.get_meal_types_list()]
 
     def total_days(self):
-        return self.plan.days
+        return self.custom_days if self.custom_days else self.plan.days
 
     def get_subscriber_url(self):
         return f"/s/{self.token}/"
