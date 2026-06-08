@@ -43,18 +43,23 @@ jobs:
               sys.exit(1)
           print(f"Logged in! URL={r.url}")
 
-          # Step 3: Extend
+          # Step 3: Use cookie CSRF token (not form token) — must match what browser sends
           csrf2 = s.cookies.get("csrftoken", csrf_token)
+
+          # Step 4: Extend — no trailing slash, CSRF sent as both header and body
           r = s.post(
-              f"https://www.pythonanywhere.com/user/{USERNAME}/webapps/{DOMAIN}/extend/",
+              f"https://www.pythonanywhere.com/user/{USERNAME}/webapps/{DOMAIN}/extend",
               data={"csrfmiddlewaretoken": csrf2},
-              headers={"Referer": f"https://www.pythonanywhere.com/user/{USERNAME}/webapps/"},
+              headers={
+                  "Referer": f"https://www.pythonanywhere.com/user/{USERNAME}/webapps/",
+                  "X-CSRFToken": csrf2,
+              },
               allow_redirects=True
           )
-          print(f"Extend status: {r.status_code}")
-          if r.status_code in [200, 201, 302]:
+          print(f"Extend status: {r.status_code}, URL: {r.url}")
+          if r.status_code == 200 and f"/user/{USERNAME}/webapps" in r.url:
               print("SUCCESS: Webapp extended!")
           else:
-              print(f"Response: {r.text[:300]}")
+              print(f"Response: {r.text[:500]}")
               sys.exit(1)
           EOF
