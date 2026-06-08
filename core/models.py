@@ -121,6 +121,11 @@ class Subscriber(models.Model):
     def total_days(self):
         return self.custom_days if self.custom_days else self.plan.days
 
+    def days_consumed(self):
+        from django.utils import timezone
+        elapsed = max(0, (timezone.localdate() - self.start_date).days)
+        return min(elapsed, self.total_days())
+
     def get_subscriber_url(self):
         return f"/s/{self.token}/"
 

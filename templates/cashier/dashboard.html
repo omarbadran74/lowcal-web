@@ -47,7 +47,7 @@
                 <td class="px-5 py-4 text-sm text-gray-600">{{ sub.get_meal_types_display_list|join:" + " }}</td>
                 <td class="px-5 py-4">
                     <div class="flex items-center gap-1.5">
-                        <span class="font-bold text-orange-500">{{ sub.submissions.count }}</span>
+                        <span class="font-bold text-orange-500">{{ sub.days_consumed }}</span>
                         <span class="text-gray-400 text-sm">/ {{ sub.total_days }}</span>
                     </div>
                 </td>
@@ -77,11 +77,11 @@
         </div>
         <div class="flex items-center justify-between text-sm">
             <span class="text-gray-500">{{ sub.plan.meals_per_day }} meals · {{ sub.total_days }} days</span>
-            <span class="font-bold text-orange-500">{{ sub.submissions.count }}<span class="text-gray-400 font-normal"> / {{ sub.total_days }} days</span></span>
+            <span class="font-bold text-orange-500">{{ sub.days_consumed }}<span class="text-gray-400 font-normal"> / {{ sub.total_days }} days</span></span>
         </div>
         <!-- Progress bar -->
         <div class="mt-2 h-1.5 bg-gray-100 rounded-full overflow-hidden">
-            <div class="h-full bg-orange-400 rounded-full" style="width: {% widthratio sub.submissions.count sub.total_days 100 %}%"></div>
+            <div class="h-full bg-orange-400 rounded-full" style="width: {% widthratio sub.days_consumed sub.total_days 100 %}%"></div>
         </div>
     </a>
     {% empty %}
