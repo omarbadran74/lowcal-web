@@ -210,6 +210,8 @@ function checkDayComplete(day) {
 
 function submitDay(day) {
     if (!confirm(`Submit Day ${day}?\nYou won't be able to change your meals after submitting.`)) return;
+    const btn = document.getElementById(`submit-btn-${day}`);
+    if (btn) { btn.disabled = true; btn.textContent = 'Submitting…'; }
     fetch(`/s/${TOKEN}/submit/`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') },
@@ -218,16 +220,11 @@ function submitDay(day) {
     .then(r => r.json())
     .then(data => {
         if (data.success) {
-            const dayEl = document.getElementById(`day-${day}`);
-            dayEl.classList.replace('border-gray-100', 'border-green-300');
-            const btn = dayEl.querySelector('button');
-            btn.classList.add('bg-green-50');
-            const circle = btn.querySelector('.rounded-full');
-            circle.classList.remove('bg-orange-500', 'bg-gray-200', 'text-gray-600');
-            circle.classList.add('bg-green-500', 'text-white');
-            circle.textContent = '✓';
-            setTimeout(() => document.getElementById(`day-content-${day}`).classList.add('hidden'), 400);
-        } else alert(data.error);
+            location.reload();
+        } else {
+            alert(data.error);
+            if (btn) { btn.disabled = false; btn.textContent = `Submit Day ${day} →`; }
+        }
     });
 }
 
