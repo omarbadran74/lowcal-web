@@ -310,6 +310,45 @@ def subscriber_create(request):
     })
 
 
+@admin_required
+def subscriber_edit(request, pk):
+    subscriber = get_object_or_404(Subscriber, pk=pk)
+    plans = SubscriptionPlan.objects.all().order_by('goal', 'meals_per_day', 'days')
+    if request.method == 'POST':
+        name = request.POST.get('name', '').strip()
+        phone = request.POST.get('phone', '').strip()
+        plan_id = request.POST.get('plan')
+        meal_types = request.POST.getlist('meal_types')
+        start_date = request.POST.get('start_date')
+        notes = request.POST.get('notes', '').strip()
+        raw_days = request.POST.get('custom_days', '').strip()
+        raw_price = request.POST.get('custom_price', '').strip()
+        if name and phone and plan_id and meal_types and start_date:
+            custom_days = int(raw_days) if raw_days and raw_days.isdigit() else None
+            try:
+                custom_price = float(raw_price) if raw_price else None
+            except ValueError:
+                custom_price = None
+            subscriber.name = name
+            subscriber.phone = phone
+            subscriber.plan_id = plan_id
+            subscriber.meal_types = ','.join(meal_types)
+            subscriber.start_date = start_date
+            subscriber.notes = notes
+            subscriber.custom_days = custom_days
+            subscriber.custom_price = custom_price
+            subscriber.save()
+            messages.success(request, f'Subscriber {name} updated successfully!')
+            return redirect('cashier:subscriber_detail', pk=subscriber.pk)
+        messages.error(request, 'Please fill all required fields')
+    return render(request, 'cashier/subscriber_form.html', {
+        'plans': plans,
+        'meal_types': MEAL_TYPES,
+        'subscriber': subscriber,
+        'title': f'Edit — {subscriber.name}',
+    })
+
+
 @cashier_required
 def subscriber_detail(request, pk):
     subscriber = get_object_or_404(Subscriber, pk=pk)
