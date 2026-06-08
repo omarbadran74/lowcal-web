@@ -12,23 +12,49 @@ jobs:
       - name: Extend PythonAnywhere Webapp
         run: |
           python3 << 'EOF'
-          import requests, sys
+          import requests, re, sys
 
-          TOKEN    = "${{ secrets.PA_TOKEN }}"
-          USERNAME = "OmarSW"
-          DOMAIN   = "omarsw.pythonanywhere.com"
+          USERNAME = "${{ secrets.PA_USERNAME }}"
+          PASSWORD = "${{ secrets.PA_PASSWORD }}"
+          DOMAIN   = "OmarSW.pythonanywhere.com"
 
-          headers = {"Authorization": f"Token {TOKEN}"}
+          s = requests.Session()
+          s.headers.update({"User-Agent": "Mozilla/5.0"})
 
-          r = requests.post(
-              f"https://www.pythonanywhere.com/api/v0/user/{USERNAME}/webapps/{DOMAIN}/extend/",
-              headers=headers,
+          # Step 1: Get CSRF token
+          r = s.get("https://www.pythonanywhere.com/login/")
+          csrf = re.search(r'name="csrfmiddlewaretoken" value="([^"]+)"', r.text)
+          if not csrf:
+              print("ERROR: no CSRF token"); sys.exit(1)
+          csrf_token = csrf.group(1)
+          print(f"CSRF: {csrf_token[:10]}...")
+
+          # Step 2: Login
+          r = s.post("https://www.pythonanywhere.com/login/", data={
+              "csrfmiddlewaretoken": csrf_token,
+              "auth-username": USERNAME,
+              "auth-password": PASSWORD,
+              "login_view-current_step": "auth",
+          }, headers={"Referer": "https://www.pythonanywhere.com/login/"}, allow_redirects=True)
+
+          if "/dashboard" not in r.url and "dashboard" not in r.text[:500]:
+              print(f"ERROR: Login failed. URL={r.url}")
+              print(r.text[:300])
+              sys.exit(1)
+          print("Logged in!")
+
+          # Step 3: Extend
+          csrf2 = s.cookies.get("csrftoken", csrf_token)
+          r = s.post(
+              f"https://www.pythonanywhere.com/user/{USERNAME}/webapps/{DOMAIN}/extend/",
+              data={"csrfmiddlewaretoken": csrf2},
+              headers={"Referer": f"https://www.pythonanywhere.com/user/{USERNAME}/webapps/"},
+              allow_redirects=True
           )
-          print(f"Status: {r.status_code}")
-          print(f"Response: {r.text}")
-          if r.status_code == 200:
+          print(f"Extend status: {r.status_code}")
+          if r.status_code in [200, 201, 302]:
               print("SUCCESS: Webapp extended!")
           else:
-              print("FAILED")
+              print(f"Response: {r.text[:300]}")
               sys.exit(1)
           EOF
