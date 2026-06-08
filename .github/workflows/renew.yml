@@ -37,11 +37,11 @@ jobs:
               "login_view-current_step": "auth",
           }, headers={"Referer": "https://www.pythonanywhere.com/login/"}, allow_redirects=True)
 
-          if "/dashboard" not in r.url and "dashboard" not in r.text[:500]:
+          if "/login" in r.url:
               print(f"ERROR: Login failed. URL={r.url}")
               print(r.text[:300])
               sys.exit(1)
-          print("Logged in!")
+          print(f"Logged in! URL={r.url}")
 
           # Step 3: Extend
           csrf2 = s.cookies.get("csrftoken", csrf_token)
