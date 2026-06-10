@@ -238,7 +238,7 @@ def admin_subscribers(request):
     return render(request, 'admin_panel/subscribers.html', {'subscribers': subscribers})
 
 
-@admin_required
+@cashier_required
 @require_POST
 def reset_day(request, pk, day_number):
     subscriber = get_object_or_404(Subscriber, pk=pk)
@@ -248,7 +248,7 @@ def reset_day(request, pk, day_number):
     return redirect('cashier:subscriber_detail', pk=pk)
 
 
-@admin_required
+@cashier_required
 @require_POST
 def add_absent_day(request, pk):
     subscriber = get_object_or_404(Subscriber, pk=pk)

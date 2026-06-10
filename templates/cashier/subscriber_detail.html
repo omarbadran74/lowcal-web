@@ -62,7 +62,6 @@
     </div>
 </div>
 
-{% if user.is_admin_role %}
 <div class="flex items-center gap-2 mb-4">
     <form method="post" action="{% url 'admin_panel:add_absent_day' subscriber.pk %}"
           onsubmit="return confirm('Add 1 absent day to {{ subscriber.name }}?\nTotal will become {{ subscriber.total_days|add:1 }} days.')">
@@ -74,7 +73,6 @@
     </form>
     <span class="text-xs text-gray-400">Subscriber missed a day? Add it back to their total.</span>
 </div>
-{% endif %}
 
 <!-- Payment Info -->
 {% if subscriber.paid_amount or subscriber.paid_by %}
@@ -116,7 +114,6 @@
             <div class="flex items-center gap-2">
                 {% if day_info.submitted %}
                 <span class="text-xs font-bold text-green-700 bg-green-200 px-2 py-0.5 rounded-full">✓ Submitted</span>
-                {% if user.is_admin_role %}
                 <form method="post" action="{% url 'admin_panel:reset_day' subscriber.pk day_info.day %}"
                       onsubmit="return confirm('Reset Day {{ day_info.day }}?')">
                     {% csrf_token %}
@@ -124,7 +121,6 @@
                         ↺ Reset
                     </button>
                 </form>
-                {% endif %}
                 {% else %}
                 <span class="text-xs font-bold text-gray-400 bg-gray-200 px-2 py-0.5 rounded-full">Pending</span>
                 {% endif %}
