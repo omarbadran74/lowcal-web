@@ -43,7 +43,7 @@
 </div>
 
 <!-- Stats -->
-<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-4">
+<div class="grid grid-cols-2 sm:grid-cols-4 gap-2 mb-3">
     <div class="bg-white rounded-xl p-3 shadow-sm border border-gray-100 text-center">
         <p class="text-2xl font-black text-orange-500">{{ subscriber.total_days }}</p>
         <p class="text-xs text-gray-500 mt-0.5">Total Days</p>
@@ -61,6 +61,20 @@
         <p class="text-xs text-gray-500 mt-0.5">Start Date</p>
     </div>
 </div>
+
+{% if user.is_admin_role %}
+<div class="flex items-center gap-2 mb-4">
+    <form method="post" action="{% url 'admin_panel:add_absent_day' subscriber.pk %}"
+          onsubmit="return confirm('Add 1 absent day to {{ subscriber.name }}?\nTotal will become {{ subscriber.total_days|add:1 }} days.')">
+        {% csrf_token %}
+        <button type="submit"
+            class="flex items-center gap-1.5 bg-amber-100 text-amber-700 hover:bg-amber-200 px-3 py-1.5 rounded-lg text-xs font-bold transition">
+            + Absent Day
+        </button>
+    </form>
+    <span class="text-xs text-gray-400">Subscriber missed a day? Add it back to their total.</span>
+</div>
+{% endif %}
 
 <!-- Payment Info -->
 {% if subscriber.paid_amount or subscriber.paid_by %}

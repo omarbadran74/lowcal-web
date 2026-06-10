@@ -250,6 +250,16 @@ def reset_day(request, pk, day_number):
 
 @admin_required
 @require_POST
+def add_absent_day(request, pk):
+    subscriber = get_object_or_404(Subscriber, pk=pk)
+    subscriber.custom_days = subscriber.total_days() + 1
+    subscriber.save(update_fields=['custom_days'])
+    messages.success(request, f'Absent day added — total is now {subscriber.total_days()} days')
+    return redirect('cashier:subscriber_detail', pk=pk)
+
+
+@admin_required
+@require_POST
 def subscriber_delete(request, pk):
     subscriber = get_object_or_404(Subscriber, pk=pk)
     name = subscriber.name
