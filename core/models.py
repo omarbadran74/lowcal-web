@@ -99,6 +99,8 @@ class Subscriber(models.Model):
     start_date = models.DateField(verbose_name='تاريخ البداية')
     custom_days = models.PositiveIntegerField(null=True, blank=True, verbose_name='أيام مخصصة')
     custom_price = models.DecimalField(max_digits=8, decimal_places=2, null=True, blank=True, verbose_name='سعر مخصص')
+    paid_amount = models.DecimalField(max_digits=10, decimal_places=2, null=True, blank=True, verbose_name='المبلغ المدفوع')
+    paid_by = models.CharField(max_length=100, blank=True, default='', verbose_name='طريقة الدفع')
     notes = models.TextField(blank=True, verbose_name='ملاحظات')
     created_by = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, verbose_name='أنشئ بواسطة')
     created_at = models.DateTimeField(auto_now_add=True)

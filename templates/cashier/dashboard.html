@@ -31,6 +31,7 @@
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Plan</th>
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Meals</th>
                 <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Progress</th>
+                <th class="text-left px-5 py-3 text-sm font-bold text-gray-600">Paid</th>
                 <th class="px-5 py-3"></th>
             </tr>
         </thead>
@@ -51,12 +52,20 @@
                         <span class="text-gray-400 text-sm">/ {{ sub.total_days }}</span>
                     </div>
                 </td>
+                <td class="px-5 py-4 text-sm">
+                    {% if sub.paid_amount %}
+                    <span class="font-bold text-gray-800">{{ sub.paid_amount|floatformat:0 }}</span>
+                    {% if sub.paid_by %}<span class="text-gray-400 text-xs block">{{ sub.paid_by }}</span>{% endif %}
+                    {% else %}
+                    <span class="text-gray-300">—</span>
+                    {% endif %}
+                </td>
                 <td class="px-5 py-4">
                     <a href="{% url 'cashier:subscriber_detail' sub.pk %}" class="text-sm text-orange-500 hover:underline font-semibold">View →</a>
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="6" class="text-center py-10 text-gray-400">No subscribers yet</td></tr>
+            <tr><td colspan="7" class="text-center py-10 text-gray-400">No subscribers yet</td></tr>
             {% endfor %}
         </tbody>
     </table>

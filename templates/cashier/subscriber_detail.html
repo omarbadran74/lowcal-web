@@ -62,6 +62,30 @@
     </div>
 </div>
 
+<!-- Payment Info -->
+{% if subscriber.paid_amount or subscriber.paid_by %}
+<div class="bg-white rounded-xl border border-gray-100 shadow-sm px-4 py-3 mb-4 flex items-center gap-6">
+    {% if subscriber.paid_amount %}
+    <div>
+        <p class="text-xs text-gray-400 mb-0.5">Paid Amount</p>
+        <p class="font-black text-gray-800 text-lg">QAR {{ subscriber.paid_amount|floatformat:0 }}</p>
+    </div>
+    {% endif %}
+    {% if subscriber.custom_price and subscriber.custom_price != subscriber.plan.price %}
+    <div>
+        <p class="text-xs text-gray-400 mb-0.5">Agreed Price</p>
+        <p class="font-bold text-gray-600">QAR {{ subscriber.custom_price|floatformat:0 }}</p>
+    </div>
+    {% endif %}
+    {% if subscriber.paid_by %}
+    <div>
+        <p class="text-xs text-gray-400 mb-0.5">Paid By</p>
+        <p class="font-bold text-gray-700">{{ subscriber.paid_by }}</p>
+    </div>
+    {% endif %}
+</div>
+{% endif %}
+
 {% if subscriber.notes %}
 <div class="bg-amber-50 border border-amber-200 rounded-lg px-4 py-2.5 mb-4 text-sm text-amber-800">
     <span class="font-bold">Notes: </span>{{ subscriber.notes }}

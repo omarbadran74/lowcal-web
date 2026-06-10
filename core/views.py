@@ -288,6 +288,8 @@ def subscriber_create(request):
         notes = request.POST.get('notes', '').strip()
         raw_days = request.POST.get('custom_days', '').strip()
         raw_price = request.POST.get('custom_price', '').strip()
+        raw_paid = request.POST.get('paid_amount', '').strip()
+        paid_by = request.POST.get('paid_by', '').strip()
         if name and phone and plan_id and meal_types and start_date:
             plan = SubscriptionPlan.objects.get(pk=plan_id)
             cd = int(raw_days) if raw_days and raw_days.isdigit() else None
@@ -297,11 +299,16 @@ def subscriber_create(request):
                 custom_price = cp if cp and cp != float(plan.price) else None
             except ValueError:
                 custom_price = None
+            try:
+                paid_amount = float(raw_paid) if raw_paid else None
+            except ValueError:
+                paid_amount = None
             subscriber = Subscriber.objects.create(
                 name=name, phone=phone, plan=plan,
                 meal_types=','.join(meal_types),
                 start_date=start_date, notes=notes, created_by=request.user,
                 custom_days=custom_days, custom_price=custom_price,
+                paid_amount=paid_amount, paid_by=paid_by,
             )
             messages.success(request, f'Subscriber {name} created successfully!')
             return redirect('cashier:subscriber_detail', pk=subscriber.pk)
@@ -326,6 +333,8 @@ def subscriber_edit(request, pk):
         notes = request.POST.get('notes', '').strip()
         raw_days = request.POST.get('custom_days', '').strip()
         raw_price = request.POST.get('custom_price', '').strip()
+        raw_paid = request.POST.get('paid_amount', '').strip()
+        paid_by = request.POST.get('paid_by', '').strip()
         if name and phone and plan_id and meal_types and start_date:
             plan = SubscriptionPlan.objects.get(pk=plan_id)
             cd = int(raw_days) if raw_days and raw_days.isdigit() else None
@@ -335,6 +344,10 @@ def subscriber_edit(request, pk):
                 custom_price = cp if cp and cp != float(plan.price) else None
             except ValueError:
                 custom_price = None
+            try:
+                paid_amount = float(raw_paid) if raw_paid else None
+            except ValueError:
+                paid_amount = None
             subscriber.name = name
             subscriber.phone = phone
             subscriber.plan = plan
@@ -343,6 +356,8 @@ def subscriber_edit(request, pk):
             subscriber.notes = notes
             subscriber.custom_days = custom_days
             subscriber.custom_price = custom_price
+            subscriber.paid_amount = paid_amount
+            subscriber.paid_by = paid_by
             subscriber.save()
             messages.success(request, f'Subscriber {name} updated successfully!')
             return redirect('cashier:subscriber_detail', pk=subscriber.pk)
