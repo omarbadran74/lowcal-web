@@ -43,7 +43,17 @@ def _redirect_by_role(user):
     return redirect('cashier:dashboard')
 
 
-# -- Admin Panel --
+# -- Role decorators --
+
+def cashier_required(view_func):
+    @login_required
+    def wrapper(request, *args, **kwargs):
+        if not (request.user.is_cashier_role() or request.user.is_admin_role()):
+            return HttpResponseForbidden('Access denied')
+        return view_func(request, *args, **kwargs)
+    wrapper.__name__ = view_func.__name__
+    return wrapper
+
 
 def admin_required(view_func):
     @login_required
@@ -269,16 +279,6 @@ def subscriber_delete(request, pk):
 
 
 # -- Cashier Panel --
-
-def cashier_required(view_func):
-    @login_required
-    def wrapper(request, *args, **kwargs):
-        if not (request.user.is_cashier_role() or request.user.is_admin_role()):
-            return HttpResponseForbidden('Access denied')
-        return view_func(request, *args, **kwargs)
-    wrapper.__name__ = view_func.__name__
-    return wrapper
-
 
 @cashier_required
 def cashier_dashboard(request):
